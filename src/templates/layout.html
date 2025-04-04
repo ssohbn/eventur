@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ .Title }}</title>
+  </head>
+  <body>
+    {{ template "navbar" . }} {{ block "content" . }}{{ end }}
+  </body>
+</html>
