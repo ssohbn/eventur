@@ -1,0 +1,39 @@
+.event-listing {
+	border: 1px solid #000;
+	display: flex;
+	align-items: flex-start; /* Align items to the top */
+	margin-bottom: 20px; /* Add some space between listings */
+}
+
+.event-listing img {
+	width: 150px; /* Adjust image width as needed */
+	height: auto;
+	margin-right: 20px; /* Add space between image and text */
+}
+
+.event-listing-details {
+	flex: 1; /* Allow the text area to take up remaining space */
+}
+
+.event-listing-title {
+	font-weight: bold;
+	font-size: 1.2em; /* Adjust title size as needed */
+	margin-bottom: 5px; /* Add space between title and blurb */
+}
+
+.event-listing-blurb {
+	font-size: 1em; /* Adjust blurb size as needed */
+	line-height: 1.5; /* Improve readability */
+}
+
+/* Example usage: */
+
+/*
+<div class="event-listing">
+<img src="event-image.jpg" alt="Event Image">
+<div class="event-listing-details">
+<div class="event-listing-title">Event Title</div>
+<div class="event-listing-blurb">A short description of the event.</div>
+</div>
+</div>
+ */

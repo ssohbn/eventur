@@ -4,7 +4,35 @@
 	</head>
 
 	<body>
-		<h1>create event here</h1>
-		
+		<h2>Event Creation Form</h2>
+
+		<form id="eventForm">
+			<label for="image">Event Image:</label>
+			<input type="file" id="image" name="image" accept="image/*" required>
+			<br>
+
+			<label for="title">Event Title:</label>
+			<input type="text" id="title" name="title" required>
+			<br>
+
+			<label for="description">Event Description:</label>
+			<textarea id="description" name="description" rows="4" required></textarea>
+			<br>
+
+			<label for="blurb">Short Blurb:</label>
+			<textarea id="blurb" name="blurb" rows="2" required></textarea>
+			<br>
+
+			<label for="date">Event Date:</label>
+			<input type="date" id="date" name="date" required>
+			<br>
+
+			<label for="location">Event Location:</label>
+			<input type="text" id="location" name="location" required>
+			<br>
+
+			<button type="submit">Submit</button>
+		</form>
+
 	</body>
 </html>
