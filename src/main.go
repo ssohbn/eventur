@@ -1,7 +1,7 @@
 package main
 
 import (
-  "net/http"
+	"net/http"
 
   "github.com/gin-gonic/gin"
 
@@ -15,7 +15,7 @@ func main() {
       "message": "pong",
     })
   })
-  //front end stuff
+  //front end routes
   templ := template.Must(template.ParseFiles(
     "src/templates/layout.html",
     "src/templates/index.html",
