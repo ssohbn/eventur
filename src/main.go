@@ -6,9 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
+	// "github.com/golang-jwt/jwt/v4"
+	
 	"html/template"
 )
+
 
 func main() {
 	// connect to the database
@@ -25,6 +27,14 @@ func main() {
 	}()
 
 	r := gin.Default()
+
+	// var jwtKey = []byte("my_secret_key")
+	// var tokens []string
+	// 
+	// type Claims struct {
+	// 	Username string `json:"username"`
+	// 	jwt.RegisteredClaims
+	// }
 
 	r.POST("/api/createEvent", func(c *gin.Context) {
 		log.Println("recv'd ")
@@ -71,11 +81,13 @@ func main() {
 			"eventsList": getEvents(DBclient),
 		})
 	})
+
 	r.GET("/create", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "create.html", gin.H{
 			"title": "Main website",
 		})
 	})
+
 	r.GET("/profile", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "profile.html", gin.H{
 			"title":   "Main website",
@@ -85,6 +97,7 @@ func main() {
 			"events":  getEventsByDirector(DBclient, "Larry"),
 		})
 	})
+
 	r.GET("/events", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "events.html", gin.H{
 			"title":    "Main website",
@@ -92,6 +105,55 @@ func main() {
 			"Events":   getEvents(DBclient),
 		})
 	})
+
+	r.GET("/signup", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "signup.html", gin.H{
+			"title": "Signup Page",
+		})
+	})
+
+	r.GET("/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "login.html", gin.H{
+			"title": "Login Page",
+		})
+	})
+
+	r.POST("/api/signup", func(c *gin.Context) {
+		log.Println("recv'd ")
+
+		var user User
+		if err := c.ShouldBind(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			log.Printf("errored:%s\n", err)
+			return
+		}
+
+		// try inserting into db
+		err := createUser(DBclient, user)
+		if err != nil {
+			log.Printf("failed to create user: %s", err)
+		}
+
+		// If data binding is successful, return the user information
+		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user})
+		log.Printf("%+v\n", user)
+	})
+
+	r.POST("/api/login", func(c *gin.Context) {
+		log.Println("recv'd ")
+
+		var user User
+		if err := c.ShouldBind(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			log.Printf("errored:%s\n", err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user})
+		log.Printf("%+v\n", user)
+	})
+
+
 
 	//front end routes
 	r.Static("/js", "src/static/js")

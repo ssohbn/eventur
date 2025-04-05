@@ -1,0 +1,46 @@
+<html>
+	{{ template "head" . }}
+	<h2>Event Creation Form</h2>
+
+	<form id="signupForm">
+		<label for="username">Username:</label>
+		<input type="text" id="username" name="username" required>
+
+		<label for="email">Email (optional):</label>
+		<input type="email" id="email" name="email">
+
+		<label for="password">Password:</label>
+		<input type="password" id="password" name="password" required>
+
+		<button type="submit">Submit</button>
+	</form>
+
+	<script>
+		const form = document.getElementById("signupForm");
+
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+
+			const formData = new FormData(form);
+
+			try {
+				const response = await fetch("api/signup", {
+					method: "POST",
+					body: formData,
+				});
+
+				console.log(response);
+
+				if (response.ok) {
+					const result = await response.json();
+					console.log("Success:", result);
+					window.location.href = "/login";
+				} else {
+					console.error("Error:", response.status);
+				}
+			} catch (error) {
+				console.error("Network error:", error);
+			}
+		});
+	</script>
+</html>
