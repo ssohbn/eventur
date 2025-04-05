@@ -1,6 +1,6 @@
 <html>
   {{ template "head" }}
-  {{template "eventCard"}}
+  <div >{{range .eventsList}} {{template "eventCard"}} {{end}}</div>
   <div id="event-controls">
     <button type="" style="background-color: red">
       <svg

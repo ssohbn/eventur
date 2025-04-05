@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	// "html/template"
+	
+  "time"
 )
 
 func main() {
@@ -54,10 +55,17 @@ func main() {
 		})
 	})
 
+
+  // front end routes
+
+  r.LoadHTMLGlob("src/templates/**/*")
+
+
   r.GET("/", func(c *gin.Context) {
     c.HTML(http.StatusOK, "index.html", gin.H{
       "title": "Main website",
       "isIndex":true,
+      "eventsList": []Event{{Title: "Event 1",Blurb: "This is the first event.",Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC),Location: "Location 1",},{Title: "Event 2",Blurb: "This is the second event.",Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC),Location: "Location 2",},},
     })
   })
   r.GET("/create", func(c *gin.Context) {
