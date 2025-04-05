@@ -18,7 +18,10 @@ import (
 
 type User struct {
 	Username string `form:"username" binding:"required"`
-	Bio string `form:"bio" binding:"required"`
+	Email string `form:"email" binding:"required,email"`
+	Password string `form:"password" binding:"required"`
+
+	Bio string `form:"bio" binding:""`
 }
 
 type Event struct {
