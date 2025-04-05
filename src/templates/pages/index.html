@@ -2,16 +2,15 @@
   <link rel="stylesheet" href="css/index.css" />
   <script src="js/swipeEffect.js" defer></script>
   {{ template "head" }} {{template "EventFilterSettings"}}
+  <p class="no-events">
+    You have no more events to view. Adjust filters to view more.
+  </p>
   <div id="event-container">
-    {{range .eventsList}} {{template "eventCard" ( dict "ID" .Title "Title"
-    .Title "IMG" .Img_url "Blurb" .Blurb)}} {{end}}
+    {{range $index, $item := .eventsList}} {{template "eventCard" ( dict "ID"
+    $index "Title" .Title "IMG" .Img_url "Blurb" .Blurb)}} {{end}}
   </div>
   <div id="event-controls">
-    <button
-      type=""
-      style="background-color: red"
-      onClick="swipeLeft('Event 1')"
-    >
+    <button type="" style="background-color: red" onClick="swipeLeft()">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
@@ -23,11 +22,7 @@
         />
       </svg>
     </button>
-    <button
-      type=""
-      style="background-color: green"
-      onclick="swipeRight('Event 2')"
-    >
+    <button type="" style="background-color: green" onclick="swipeRight()">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
