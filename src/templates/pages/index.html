@@ -6,7 +6,11 @@
     {{range .eventsList}} {{template "eventCard" (dict "ID" .Title)}} {{end}}
   </div>
   <div id="event-controls">
-    <button type="" style="background-color: red">
+    <button
+      type=""
+      style="background-color: red"
+      onClick="swipeLeft('Event 1')"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
@@ -18,7 +22,11 @@
         />
       </svg>
     </button>
-    <button type="" style="background-color: green">
+    <button
+      type=""
+      style="background-color: green"
+      onclick="swipeRight('Event 2')"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
