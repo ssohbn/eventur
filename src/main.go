@@ -74,7 +74,7 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":      "Main website",
 			"isIndex":    true,
-			"eventsList": []Event{{Title: "Event 1", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1" , Img_url: "https://as2.ftcdn.net/v2/jpg/04/96/15/83/1000_F_496158338_SgDd7OQQC2QVfN7U5Qijl2muktM0LjjG.jpg"}, {Title: "Event 2", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2", Img_url: "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"}},
+			"eventsList": []Event{{Title: "Picnic at the park", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1" , Img_url: "https://as2.ftcdn.net/v2/jpg/04/96/15/83/1000_F_496158338_SgDd7OQQC2QVfN7U5Qijl2muktM0LjjG.jpg"}, {Title: "Midnight Concert", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2", Img_url: "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"}},
 		})
 	})
 	r.GET("/create", func(c *gin.Context) {
