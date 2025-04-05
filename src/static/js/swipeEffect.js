@@ -19,7 +19,13 @@ const swipeLeft = () => {
   const card = document.getElementById(cards.length - i - 1);
   console.log(card);
   card.classList.add("swipe-left-fade");
-  i += 1;
+  if (i < cards.length - 1) {
+    i += 1;
+  } else {
+    removeControls();
+    fadeInOut("Not interested!", "#f56e64");
+    return;
+  }
   updateBackgound(cards[cards.length - i - 1].Img_url);
   fadeInOut("Not interested!", "#f56e64");
 };
@@ -29,7 +35,13 @@ const swipeRight = () => {
   const card = document.getElementById(cards.length - i - 1);
   console.log(card);
   card.classList.add("swipe-right-fade");
-  i += 1;
+  if (i < cards.length - 1) {
+    i += 1;
+  } else {
+    removeControls();
+    fadeInOut("Sounds Fun!", "#73f564");
+    return;
+  }
   updateBackgound(cards[cards.length - i - 1].Img_url);
   fadeInOut("Sounds Fun!", "#73f564");
 };
@@ -47,4 +59,15 @@ const fadeInOut = (message, color) => {
   setTimeout(() => {
     popup.classList.remove("fade-out");
   }, delay * 2);
+};
+
+const removeControls = () => {
+  const controls = document.getElementById("event-controls");
+  controls.style.display = "none";
+  updateBackgound("");
+};
+
+const showControls = () => {
+  const controls = document.getElementById("event-controls");
+  controls.style.display = "default";
 };
