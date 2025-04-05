@@ -3,24 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
-	"github.com/gin-gonic/gin"
 
-	"time"
+	"github.com/gin-gonic/gin"
 )
 
-type Event struct {
-	Title string `form:"title" binding:"required"`
-	Blurb string `form:"blurb"`
-
-	// not required because tbd dates are allowed
-	Date time.Time `form:"date" time_format:"2006-01-02"`
-
-	// not required because tbd locations are allowed
-	// maybe should be required for like city or something
-	Location string `form:"location"`
-}
-
 func main() {
+	// connect to the database
+	DBclient := connectDB()
+	if DBclient == nil {
+		log.Fatal("Failed to connect to MongoDB")
+	}
+
 	r := gin.Default()
 
 	r.POST("/api/createEvent", func(c *gin.Context) {
