@@ -10,6 +10,7 @@ import (
 
 	"github.com/joho/godotenv"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
@@ -25,8 +26,9 @@ type User struct {
 }
 
 type Event struct {
-	Title string `form:"title" binding:"required"`
-	Blurb string `form:"blurb"`
+	Title    string `form:"title" binding:"required"`
+	Director string
+	Blurb    string `form:"blurb"`
 
 	// not required because tbd dates are allowed
 	Date time.Time `form:"date" time_format:"2006-01-02"`
@@ -70,7 +72,7 @@ func createUser(client *mongo.Client, user User) error {
 // create event
 func createEvent(client *mongo.Client, event Event) error {
 	coll := client.Database("eventure").Collection("events")
-	_, err := coll.InsertOne(context.TODO(), event)
+	_, err := coll.InsertOne(context.Background(), event)
 	if err != nil {
 		fmt.Println("Error inserting event:", err)
 		return err
@@ -78,4 +80,57 @@ func createEvent(client *mongo.Client, event Event) error {
 		fmt.Println("Inserted event successfully")
 	}
 	return nil
+}
+
+// get events
+func getEvents(client *mongo.Client) []Event {
+	coll := client.Database("eventure").Collection("events")
+
+	filter := bson.M{} // empty filter to get all documents
+	cursor, err := coll.Find(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+
+	var results []Event
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		panic(err)
+	}
+
+	return results
+}
+
+func getEventsByDirector(client *mongo.Client, directorName string) []Event {
+	coll := client.Database("eventure").Collection("events")
+
+	filter := bson.M{"director": directorName} // filter to get documents by director
+	cursor, err := coll.Find(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+
+	var results []Event
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		panic(err)
+	}
+
+	return results
+}
+
+// get user
+func getUser(client *mongo.Client) []Event {
+	coll := client.Database("eventure").Collection("users")
+
+	filter := bson.M{} // empty filter to get all documents
+	cursor, err := coll.Find(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+
+	var results []Event
+	if err = cursor.All(context.TODO(), &results); err != nil {
+		panic(err)
+	}
+
+	return results
 }

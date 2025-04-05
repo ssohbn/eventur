@@ -18,7 +18,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %s", err)
 	}
-
 	log.Println("connected to db!")
 
 	defer func() {
@@ -86,16 +85,16 @@ func main() {
 		c.HTML(http.StatusOK, "profile.html", gin.H{
 			"title":   "Main website",
 			"img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spider-Man.jpg/1200px-Spider-Man.jpg",
-			"name":    "Spider-man",
+			"name":    "Larry",
 			"bio":     "I am a superhero from New York City. I have spider-like abilities and I fight crime.",
-			"events":  []Event{{Title: "Event 1", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1"}, {Title: "Event 2", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2"}},
+			"events":  getEventsByDirector(DBclient, "Larry"),
 		})
 	})
 	r.GET("/events", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "events.html", gin.H{
 			"title":    "Main website",
 			"isEvents": true,
-			"Events":   []Event{{Title: "Event 1", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1"}, {Title: "Event 2", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2"}},
+			"Events":   getEventsByDirector(DBclient, "Larry"),
 		})
 	})
 
