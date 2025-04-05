@@ -6,10 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	
-  "time"
 
-  "html/template"
+	"html/template"
 )
 
 func main() {
@@ -49,31 +47,28 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
 		log.Printf("%+v\n", event)
 	})
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+	r.GET("/api/events", func(c *gin.Context) {
+		c.JSON(http.StatusOK, getEvents(DBclient))
 	})
 
-  // front end routes
-  r.SetFuncMap(template.FuncMap{
-    "dict": func(values ...interface{}) map[string]interface{} {
-        m := make(map[string]interface{})
-        for i := 0; i < len(values); i += 2 {
-            key := values[i].(string)
-            m[key] = values[i+1]
-        }
-        return m
-    },
-  })
+	// front end routes
+	r.SetFuncMap(template.FuncMap{
+		"dict": func(values ...interface{}) map[string]interface{} {
+			m := make(map[string]interface{})
+			for i := 0; i < len(values); i += 2 {
+				key := values[i].(string)
+				m[key] = values[i+1]
+			}
+			return m
+		},
+	})
 	r.LoadHTMLGlob("src/templates/**/*")
 
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":      "Main website",
 			"isIndex":    true,
-			"eventsList": []Event{{Title: "Picnic at the park", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1" , Img_url: "https://as2.ftcdn.net/v2/jpg/04/96/15/83/1000_F_496158338_SgDd7OQQC2QVfN7U5Qijl2muktM0LjjG.jpg"}, {Title: "Midnight Concert", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2", Img_url: "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"}},
+			"eventsList": getEvents(DBclient),
 		})
 	})
 	r.GET("/create", func(c *gin.Context) {
@@ -94,12 +89,12 @@ func main() {
 		c.HTML(http.StatusOK, "events.html", gin.H{
 			"title":    "Main website",
 			"isEvents": true,
-			"Events":   getEventsByDirector(DBclient, "Larry"),
+			"Events":   getEvents(DBclient),
 		})
 	})
 
 	//front end routes
-  r.Static("/js", "src/static/js")
+	r.Static("/js", "src/static/js")
 	r.Static("/css", "src/static/css")
 	r.Static("/imgs", "src/static/imgs")
 
