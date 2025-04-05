@@ -1,5 +1,6 @@
 <html>
-  {{ template "head" }}
+  {{ template "head" . }}
+  <link rel="stylesheet" href="css/profile.css" />
   <body>
     <div class="profile-container">
       <div class="profile-header">
@@ -8,8 +9,8 @@
           alt="Profile Picture"
           class="profile-picture"
         />
-        <h1 class="profile-name">{{ .User.Name }}</h1>
-        <p class="profile-bio">{{ .User.Bio }}</p>
+        <h1 class="profile-name">Spiderman</h1>
+        <p class="profile-bio">Your friendly neighborhood Spiderman</p>
       </div>
 
       <div class="profile-details">
