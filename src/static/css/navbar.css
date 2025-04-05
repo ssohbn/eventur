@@ -17,6 +17,17 @@ nav {
     aspect-ratio: 1/1;
   }
 
+  #impulse-button {
+    position: absolute;
+    bottom:0;
+    left: 39vw;
+    /* right: 50vw; */
+    width: 22vw;
+    aspect-ratio: 1/1;
+    background-color: white;
+    border-radius: 5vw;
+  }
+
   nav svg{
     width: 100%;
   }

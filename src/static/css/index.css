@@ -11,7 +11,7 @@
 
   #event-container {
     position: relative;
-    margin: auto;
+    /* margin: auto; */
     width: 70vw;
     aspect-ratio: 1/1.2;
   }
@@ -34,7 +34,7 @@
 
   #event-controls {
     display: flex;
-    margin: auto;
+    margin-top: 50px;
     width: 85vw;
   }
 
@@ -61,6 +61,21 @@
       transform: translateX(-100px);
     }
   }
+
+  #event-filter-settings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    padding: 15px;
+  }
+
+  #event-filter-settings button {
+    opacity: 0.75;
+    width: 30px;
+    aspect-ratio: 1/1;
+  }
+
   
   .swipe-left-fade {
     animation: swipeLeftFade 0.5s ease forwards;

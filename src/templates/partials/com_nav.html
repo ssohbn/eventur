@@ -1,4 +1,5 @@
 {{define "navbar"}}
+<div id="impulse-button"></div>
 <nav>
   <a href="create">
     <!-- CREATE -->
@@ -13,6 +14,7 @@
       />
     </svg>
   </a>
+
   <a {{if .isIndex}} href="events" {{else}} href="/" {{end}}>
     {{if .isIndex}}
     <svg
