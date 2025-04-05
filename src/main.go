@@ -61,6 +61,13 @@ func main() {
 		c.JSON(http.StatusOK, getEvents(DBclient))
 	})
 
+	r.GET("/api/users", func(c *gin.Context) {
+		// pray no error.
+		users, _ := allUsers(DBclient)
+
+		c.JSON(http.StatusOK, users)
+	})
+
 	// front end routes
 	r.SetFuncMap(template.FuncMap{
 		"dict": func(values ...interface{}) map[string]interface{} {
