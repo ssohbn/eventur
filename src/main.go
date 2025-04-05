@@ -62,6 +62,7 @@ func main() {
   r.GET("/", func(c *gin.Context) {
     c.HTML(http.StatusOK, "index.html", gin.H{
       "title": "Main website",
+      "isIndex":true,
     })
   })
   r.GET("/create", func(c *gin.Context) {
@@ -77,6 +78,8 @@ func main() {
   r.GET("/events", func(c *gin.Context) {
     c.HTML(http.StatusOK, "events.html", gin.H{
       "title": "Main website",
+      "isEvents": true,
+      "Events": []string{" "," "," "},
     })
   })
 
