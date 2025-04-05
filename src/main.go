@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-
 type Event struct {
 	Title string `form:"title" binding:"required"`
 	Blurb string `form:"blurb"`
