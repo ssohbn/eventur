@@ -10,18 +10,7 @@
   </div>
 
   <!-- generate with js thru db-->
-  {{ range .Events }}
-  <div class="event-listing">
-    <img
-      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMWPB5Y0IU9M019G1kWJZ3uyk3MTPMoORFxQ&s"
-      alt="image information"
-    />
-    <div class="event-listing-details">
-      <h1 class="event-listing-title">stock image picnic!</h1>
-      <p class="event-listing-blurb">
-        come have a really boring corporate time!
-      </p>
-    </div>
-  </div>
-  {{ end }} {{template "navbar" .}}
+  <div>{{ range .Events }} {{ template "eventListing" . }} {{ end }}</div>
+
+  {{template "navbar" .}}
 </html>

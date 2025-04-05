@@ -5,20 +5,18 @@
     <div class="profile-container">
       <div class="profile-header">
         <img
-          src="imgs/default_profile.jpg"
+          src="{{ .img_url }}"
           alt="Profile Picture"
           class="profile-picture"
         />
-        <h1 class="profile-name">Spiderman</h1>
-        <p class="profile-bio">Your friendly neighborhood Spiderman</p>
+        <h1 class="profile-name">{{ .name }}</h1>
+        <p class="profile-bio">{{ .bio }}</p>
       </div>
 
       <div class="profile-details">
-        <h2>Details</h2>
-        <ul>
-          <li><strong>Email:</strong> {{ .User.Email }}</li>
-          <li><strong>Location:</strong> {{ .User.Location }}</li>
-          <li><strong>Joined:</strong> {{ .User.JoinDate }}</li>
+        <h2>Events Created</h2>
+        <ul class="event-list">
+          {{ range .events }} {{ template "eventListing" . }} {{ end }}
         </ul>
       </div>
     </div>
