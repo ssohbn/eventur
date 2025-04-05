@@ -63,10 +63,6 @@
     padding: 15px;
   }
 
-  #event-filter-settings p {
-    /* margin: auto 0; */
-  }
-
   #event-filter-settings button {
     display: flex;
     overflow-y: hidden;
@@ -81,9 +77,31 @@
     height: 100%;
     aspect-ratio: 1/1;
   }
-  
-  .swipe-left-fade {
-    animation: swipeLeftFade 0.5s ease forwards;
+
+#pop-up-container {
+    display: flex;
+    position: absolute;
+    width: 100vw;
+    height: fit-content;
+    top: 13vh;
+    left: 0;
+  }
+
+  #pop-up {
+    display: flex;
+    width: fit-content;
+    text-align: center;
+    width: fit-content;
+    height: fit-content;
+    background-color: pink;
+    margin: auto;
+    padding: 1vw 4vw;
+    border-radius: 1vw;
+    border: 1px solid rgb(255, 233, 233);
+    opacity: 0;
+  }
+  #pop-up h4{
+    margin: auto;
   }
 
   @keyframes swipeLeftFade {
@@ -108,6 +126,36 @@
     }
   }
   
+  .swipe-left-fade {
+    animation: swipeLeftFade 0.5s ease forwards;
+  }
+
   .swipe-right-fade {
     animation: swipeRightFade 0.5s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  .fade-out {
+    animation: fadeOut 0.5s ease forwards;
   }

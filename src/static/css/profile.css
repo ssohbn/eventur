@@ -2,6 +2,10 @@ body {
     justify-content: space-between;
 }
 
+.profile-container {
+    width: 15vw;
+}
+
 .profile-header {
     width: 100vw;
 }
