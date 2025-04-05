@@ -3,25 +3,27 @@ package main
 import (
 	"log"
 	"net/http"
+	"context"
+
 	"github.com/gin-gonic/gin"
-  
-	"time"
 )
 
-
-type Event struct {
-	Title string `form:"title" binding:"required"`
-	Blurb string `form:"blurb"`
-
-	// not required because tbd dates are allowed
-	Date time.Time `form:"date" time_format:"2006-01-02"`
-
-	// not required because tbd locations are allowed
-	// maybe should be required for like city or something
-	Location string `form:"location"`
-}
-
 func main() {
+	// connect to the database
+	DBclient, err := connectDB()
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %s", err)
+	}
+
+	log.Println("connected to db!")
+
+	defer func() {
+		if err := DBclient.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+
+
 	r := gin.Default()
 
 	r.POST("/api/createEvent", func(c *gin.Context) {
@@ -35,8 +37,15 @@ func main() {
 			return
 		}
 
+		// try inserting into db
+		err := createEvent(DBclient, event)
+		if err != nil {
+			log.Printf("failed to create event %s", err)
+		}
+
 		// If data binding is successful, return the user information
 		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
+		log.Printf("%+v\n", event)
 	})
 
 	r.GET("/ping", func(c *gin.Context) {
@@ -46,10 +55,11 @@ func main() {
 	})
   
 	//front end routes
-  r.StaticFile("/", "src/static/index.html")
-  r.StaticFile("/create", "src/static/create.html")
-  r.StaticFile("/profile", "src/static/profile.html")
-  r.StaticFile("/events", "src/static/events.html")
+	r.StaticFile("/", "src/static/index.html")
+	r.StaticFile("/index", "src/static/index.html")
+	r.StaticFile("/create", "src/static/create.html")
+	r.StaticFile("/profile", "src/static/profile.html")
+	r.StaticFile("/events", "src/static/events.html")
 
 	// run the server
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
