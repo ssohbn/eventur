@@ -1,0 +1,16 @@
+
+
+form {
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+h2 {
+    text-align: center;
+}
+
+input {
+    width: 100%;
+}

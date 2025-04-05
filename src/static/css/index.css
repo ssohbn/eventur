@@ -9,11 +9,19 @@
     background-size: cover;
   }
 
+  .no-events {
+    z-index: -1;
+    position: absolute;
+    width: 50vw;
+    text-align: center;
+  }
+
   #event-container {
     position: relative;
     /* margin: auto; */
     width: 70vw;
     aspect-ratio: 1/1.2;
+    overflow: hidden;
   }
 
   .event-card {
@@ -51,18 +59,10 @@
     border-radius: 60px;
   }
 
-  @keyframes swipeLeftFade {
-    0% {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateX(-100px);
-    }
-  }
-
   #event-filter-settings {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     position: absolute;
     top: 0;
     left: 0;
@@ -71,14 +71,55 @@
   }
 
   #event-filter-settings button {
+    display: flex;
+    overflow-y: hidden;
     opacity: 0.75;
-    width: 30px;
+    height: 30px;
+    width: fit-content;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #event-filter-settings svg {
+    height: 100%;
     aspect-ratio: 1/1;
   }
 
-  
-  .swipe-left-fade {
-    animation: swipeLeftFade 0.5s ease forwards;
+#pop-up-container {
+    display: flex;
+    position: absolute;
+    width: 100vw;
+    height: fit-content;
+    top: 13vh;
+    left: 0;
+  }
+
+  #pop-up {
+    display: flex;
+    width: fit-content;
+    text-align: center;
+    width: fit-content;
+    height: fit-content;
+    background-color: pink;
+    margin: auto;
+    padding: 1vw 4vw;
+    border-radius: 1vw;
+    border: 1px solid rgb(255, 233, 233);
+    opacity: 0;
+  }
+  #pop-up h4{
+    margin: auto;
+  }
+
+  @keyframes swipeLeftFade {
+    0% {
+      opacity: 1;
+      transform: translateX(0) rotate(0deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-100px) rotate(-20deg);
+    }
   }
 
   @keyframes swipeRightFade {
@@ -88,10 +129,40 @@
     }
     100% {
       opacity: 0;
-      transform: translateX(100px);
+      transform: translateX(100px) rotate(20deg);
     }
   }
   
+  .swipe-left-fade {
+    animation: swipeLeftFade 0.5s ease forwards;
+  }
+
   .swipe-right-fade {
     animation: swipeRightFade 0.5s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  .fade-out {
+    animation: fadeOut 0.5s ease forwards;
   }

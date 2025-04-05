@@ -1,6 +1,15 @@
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('path/to/gotham-rounded.woff2') format('woff2'),
+       url('path/to/gotham-rounded.woff') format('woff'),
+       url('path/to/gotham-rounded.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     overflow-x: hidden;
+    font-family: 'Gotham Rounded', sans-serif;
   }

@@ -26,14 +26,7 @@
 	line-height: 1.5; /* Improve readability */
 }
 
-/* Example usage: */
-
-/*
-<div class="event-listing">
-<img src="event-image.jpg" alt="Event Image">
-<div class="event-listing-details">
-<div class="event-listing-title">Event Title</div>
-<div class="event-listing-blurb">A short description of the event.</div>
-</div>
-</div>
- */
+.event-listing button {
+	all:unset;
+	padding: 3px;
+}

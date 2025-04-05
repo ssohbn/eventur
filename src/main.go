@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	// "github.com/golang-jwt/jwt/v4"
 	
-	"time"
-
 	"html/template"
 )
 
@@ -20,7 +18,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %s", err)
 	}
-
 	log.Println("connected to db!")
 
 	defer func() {
@@ -60,31 +57,28 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
 		log.Printf("%+v\n", event)
 	})
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+	r.GET("/api/events", func(c *gin.Context) {
+		c.JSON(http.StatusOK, getEvents(DBclient))
 	})
 
-  // front end routes
-  r.SetFuncMap(template.FuncMap{
-    "dict": func(values ...interface{}) map[string]interface{} {
-        m := make(map[string]interface{})
-        for i := 0; i < len(values); i += 2 {
-            key := values[i].(string)
-            m[key] = values[i+1]
-        }
-        return m
-    },
-  })
+	// front end routes
+	r.SetFuncMap(template.FuncMap{
+		"dict": func(values ...interface{}) map[string]interface{} {
+			m := make(map[string]interface{})
+			for i := 0; i < len(values); i += 2 {
+				key := values[i].(string)
+				m[key] = values[i+1]
+			}
+			return m
+		},
+	})
 	r.LoadHTMLGlob("src/templates/**/*")
 
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":      "Main website",
 			"isIndex":    true,
-			"eventsList": []Event{{Title: "Event 1", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1" , Img_url: "https://as2.ftcdn.net/v2/jpg/04/96/15/83/1000_F_496158338_SgDd7OQQC2QVfN7U5Qijl2muktM0LjjG.jpg"}, {Title: "Event 2", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2", Img_url: "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg"}},
+			"eventsList": getEvents(DBclient),
 		})
 	})
 
@@ -98,9 +92,9 @@ func main() {
 		c.HTML(http.StatusOK, "profile.html", gin.H{
 			"title":   "Main website",
 			"img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spider-Man.jpg/1200px-Spider-Man.jpg",
-			"name":    "Spider-man",
+			"name":    "Larry",
 			"bio":     "I am a superhero from New York City. I have spider-like abilities and I fight crime.",
-			"events":  []Event{{Title: "Event 1", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1"}, {Title: "Event 2", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2"}},
+			"events":  getEventsByDirector(DBclient, "Larry"),
 		})
 	})
 
@@ -108,7 +102,7 @@ func main() {
 		c.HTML(http.StatusOK, "events.html", gin.H{
 			"title":    "Main website",
 			"isEvents": true,
-			"Events":   []Event{{Title: "Event 1", Blurb: "This is the first event.", Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), Location: "Location 1"}, {Title: "Event 2", Blurb: "This is the second event.", Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), Location: "Location 2"}},
+			"Events":   getEvents(DBclient),
 		})
 	})
 
