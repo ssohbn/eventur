@@ -5,7 +5,7 @@ const init = async () => {
   const res = await fetch("/api/events");
   cards = await res.json();
   console.log(cards);
-  updateBackgound(cards[i].Img_url);
+  updateBackgound(cards[cards.length - i - 1].Img_url);
 };
 init();
 
@@ -20,7 +20,7 @@ const swipeLeft = () => {
   console.log(card);
   card.classList.add("swipe-left-fade");
   i += 1;
-  updateBackgound(cards[i].Img_url);
+  updateBackgound(cards[cards.length - i - 1].Img_url);
   fadeInOut("Not interested!", "#f56e64");
 };
 
@@ -30,7 +30,7 @@ const swipeRight = () => {
   console.log(card);
   card.classList.add("swipe-right-fade");
   i += 1;
-  updateBackgound(cards[i].Img_url);
+  updateBackgound(cards[cards.length - i - 1].Img_url);
   fadeInOut("Sounds Fun!", "#73f564");
 };
 
