@@ -7,10 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	// "github.com/golang-jwt/jwt/v4"
-	
+
 	"html/template"
 )
-
 
 func main() {
 	// connect to the database
@@ -30,7 +29,7 @@ func main() {
 
 	// var jwtKey = []byte("my_secret_key")
 	// var tokens []string
-	// 
+	//
 	// type Claims struct {
 	// 	Username string `json:"username"`
 	// 	jwt.RegisteredClaims
@@ -95,12 +94,17 @@ func main() {
 		})
 	})
 
-	r.GET("/profile", func(c *gin.Context) {
+	r.GET("/profile/:name", func(c *gin.Context) {
+		name := c.Param("name")
+		user, err := findUser(DBclient, name)
+		if err != nil {
+			log.Printf("failed to find user: %s", err)
+		}
 		c.HTML(http.StatusOK, "profile.html", gin.H{
 			"title":   "Main website",
 			"img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spider-Man.jpg/1200px-Spider-Man.jpg",
-			"name":    "Larry",
-			"bio":     "I am a superhero from New York City. I have spider-like abilities and I fight crime.",
+			"name":    user.Username,
+			"bio":     user.Bio,
 			"events":  getEventsByDirector(DBclient, "Larry"),
 		})
 	})
@@ -159,8 +163,6 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user})
 		log.Printf("%+v\n", user)
 	})
-
-
 
 	//front end routes
 	r.Static("/js", "src/static/js")

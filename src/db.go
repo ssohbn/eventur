@@ -20,21 +20,21 @@ import (
 type User struct {
 	Username string `form:"username" binding:"required" bson:"username"`
 	Password string `form:"password" binding:"required" bson:"password"`
-	Token string `bson:"token"`
+	Token    string `bson:"token"`
 
-	// not checking the email binding is sketchy! 
+	// not checking the email binding is sketchy!
 	// recall: we are at a hackathon
 	//
-	// email binding fails on blank email but 
+	// email binding fails on blank email but
 	// the field shouldnt be required.
 	// I dont care to write my own function that binds it.
-	Email string `form:"email" bson:"email"` // binding:"email"` 
-	Bio      string `form:"bio" bson:"bio"`
+	Email string `form:"email" bson:"email"` // binding:"email"`
+	Bio   string `form:"bio" bson:"bio"`
 }
 
 type Event struct {
-	Title string `form:"title" binding:"required" bson:"title"`
-	Blurb string `form:"blurb" bson:"blurb"`
+	Title    string `form:"title" binding:"required" bson:"title"`
+	Blurb    string `form:"blurb" bson:"blurb"`
 	Director string
 
 	// not required because tbd dates are allowed
@@ -79,9 +79,9 @@ func createUser(client *mongo.Client, user User) error {
 }
 
 func findUser(client *mongo.Client, username string) (User, error) {
-	coll := client.Database("eventure").Collection("events")
+	coll := client.Database("eventure").Collection("users")
 
-	filter := bson.D{{"name", username}}
+	filter := bson.D{{"username", username}}
 
 	result := User{}
 
@@ -95,7 +95,7 @@ func findUser(client *mongo.Client, username string) (User, error) {
 		return result, errors.New(fmt.Sprintf("findone fucked up: %s\n", err))
 	}
 
-	return result, nil 
+	return result, nil
 }
 
 func allUsers(client *mongo.Client) ([]User, error) {
@@ -112,7 +112,7 @@ func allUsers(client *mongo.Client) ([]User, error) {
 	if err = cursor.All(context.TODO(), &users); err != nil {
 		return nil, errors.New(fmt.Sprintf("failed to unpack users into slice: %s\n"))
 	}
-	
+
 	return users, nil
 }
 
@@ -165,7 +165,7 @@ func getEventsByDirector(client *mongo.Client, directorName string) []Event {
 }
 
 // get user
-func getUser(client *mongo.Client) []Event {
+func getUser(client *mongo.Client) []User {
 	coll := client.Database("eventure").Collection("users")
 
 	filter := bson.M{} // empty filter to get all documents
@@ -174,7 +174,7 @@ func getUser(client *mongo.Client) []Event {
 		panic(err)
 	}
 
-	var results []Event
+	var results []User
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		panic(err)
 	}
