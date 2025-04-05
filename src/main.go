@@ -6,6 +6,9 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
+
+  // "html/template"
+
 )
 
 func main() {
@@ -54,12 +57,32 @@ func main() {
 		})
 	})
   
+  r.LoadHTMLGlob("src/templates/**/*")
+
+  r.GET("/", func(c *gin.Context) {
+    c.HTML(http.StatusOK, "index.html", gin.H{
+      "title": "Main website",
+    })
+  })
+  r.GET("/create", func(c *gin.Context) {
+    c.HTML(http.StatusOK, "create.html", gin.H{
+      "title": "Main website",
+    })
+  })
+  r.GET("/profile", func(c *gin.Context) {
+    c.HTML(http.StatusOK, "profile.html", gin.H{
+      "title": "Main website",
+    })
+  })
+  r.GET("/events", func(c *gin.Context) {
+    c.HTML(http.StatusOK, "events.html", gin.H{
+      "title": "Main website",
+    })
+  })
+
 	//front end routes
-	r.StaticFile("/", "src/static/index.html")
-	r.StaticFile("/index", "src/static/index.html")
-	r.StaticFile("/create", "src/static/create.html")
-	r.StaticFile("/profile", "src/static/profile.html")
-	r.StaticFile("/events", "src/static/events.html")
+	r.Static("/css", "src/static/css")
+
 
 	// run the server
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

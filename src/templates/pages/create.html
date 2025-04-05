@@ -1,0 +1,60 @@
+<html>
+  <h2>Event Creation Form</h2>
+
+  <form id="eventCreateForm">
+    <label for="image">Event Image:</label>
+    <input type="file" id="image" name="image" accept="image/*" required />
+    <br />
+
+    <label for="title">Event Title:</label>
+    <input type="text" id="title" name="title" required />
+    <br />
+
+    <label for="description">Event Description:</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+    <br />
+
+    <label for="blurb">Short Blurb:</label>
+    <textarea id="blurb" name="blurb" rows="2"></textarea>
+    <br />
+
+    <label for="date">Event Date:</label>
+    <input type="date" id="date" name="date" />
+    <br />
+
+    <label for="location">Event Location:</label>
+    <input type="text" id="location" name="location" required />
+    <br />
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const form = document.getElementById("eventCreateForm");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("api/createEvent", {
+          method: "POST",
+          body: formData,
+        });
+
+        console.log(response);
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log("Success:", result);
+        } else {
+          console.error("Error:", response.status);
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+      }
+    });
+  </script>
+  {{template "navbar"}}
+</html>
