@@ -99,7 +99,19 @@ func findUser(client *mongo.Client, username string) (User, error) {
 }
 
 func allUsers(client *mongo.Client) ([]User, error) {
+	coll := client.Database("eventure").Collection("users")
+	filter := bson.D{} // empty for all users
+
+	cursor, err := coll.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("failed to find all users: %s\n", err))
+	}
+
+	// Unpacks the cursor into a slice
 	var users []User
+	if err = cursor.All(context.TODO(), &users); err != nil {
+		return nil, errors.New(fmt.Sprintf("failed to unpack users into slice: %s\n"))
+	}
 	
 	return users, nil
 }
