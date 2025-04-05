@@ -33,6 +33,7 @@ func connectDB() *mongo.Client {
 	if uri == "" {
 		log.Fatal("Set your 'MONGOURI' environment variable.")
 	}
+
 	client, err := mongo.Connect(options.Client().
 		ApplyURI(uri))
 	if err != nil {
@@ -45,12 +46,7 @@ func connectDB() *mongo.Client {
 // create event
 func createEvent(client *mongo.Client, event Event) error {
 	coll := client.Database("eventure").Collection("events")
-	_, err := coll.InsertOne(context.TODO(), Event{
-		Title:    "Test Event",
-		Blurb:    "This is a test event.",
-		Date:     time.Now(),
-		Location: "Test Location",
-	})
+	_, err := coll.InsertOne(context.TODO(), event)
 	if err != nil {
 		fmt.Println("Error inserting event:", err)
 		return err

@@ -30,6 +30,7 @@ func main() {
 		// If data binding is successful, return the user information
 		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
 		log.Printf("%+v\n", event)
+		createEvent(DBclient, event)
 	})
 
 	r.GET("/ping", func(c *gin.Context) {
