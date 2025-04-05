@@ -1,0 +1,25 @@
+<html>
+  {{ template "head" . }}
+  <link rel="stylesheet" href="css/profile.css" />
+  <body>
+    <div class="profile-container">
+      <div class="profile-header">
+        <img
+          src="{{ .img_url }}"
+          alt="Profile Picture"
+          class="profile-picture"
+        />
+        <h1 class="profile-name">{{ .name }}</h1>
+        <p class="profile-bio">{{ .bio }}</p>
+      </div>
+
+      <div class="profile-details">
+        <h2>Events Created</h2>
+        <ul class="event-list">
+          {{ range .events }} {{ template "eventListing" . }} {{ end }}
+        </ul>
+      </div>
+    </div>
+    {{ template "navbar" }}
+  </body>
+</html>

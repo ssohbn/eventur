@@ -1,0 +1,9 @@
+{{ define "eventListing" }}
+<div class="event-listing">
+  <img src="{{ .Img_url }}" alt="Event Image" />
+  <div class="event-listing-details">
+    <h1 class="event-listing-title">{{ .Title }}</h1>
+    <p class="event-listing-blurb">{{ .Blurb }}</p>
+  </div>
+</div>
+{{ end }}

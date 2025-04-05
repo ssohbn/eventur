@@ -1,0 +1,16 @@
+<html>
+  {{ template "head" . }}
+  <h1>my events/hot events here</h1>
+
+  <div>
+    <h3>search events</h3>
+    <label for="site-search">Search the site:</label>
+    <input type="search" id="site-search" name="q" />
+    <button>Search</button>
+  </div>
+
+  <!-- generate with js thru db-->
+  <div>{{ range .Events }} {{ template "eventListing" . }} {{ end }}</div>
+
+  {{template "navbar" .}}
+</html>
