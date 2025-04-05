@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"github.com/gin-gonic/gin"
-  
+
 	"time"
 )
 
@@ -44,10 +44,10 @@ func main() {
 		})
 	})
 	//front end routes
-  r.StaticFile("/", "src/static/index.html")
-  r.StaticFile("/create", "src/static/create.html")
-  r.StaticFile("/profile", "src/static/profile.html")
-  r.StaticFile("/events", "src/static/events.html")
+	r.StaticFile("/", "src/static/index.html")
+	r.StaticFile("/create", "src/static/create.html")
+	r.StaticFile("/profile", "src/static/profile.html")
+	r.StaticFile("/events", "src/static/events.html")
 
 	// run the server
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
