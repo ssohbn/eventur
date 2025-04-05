@@ -18,7 +18,7 @@ import (
 
 type User struct {
 	Username string `form:"username" binding:"required"`
-	Bio string `form:"bio" binding:"required"`
+	Bio      string `form:"bio" binding:"required"`
 }
 
 type Event struct {
@@ -31,6 +31,8 @@ type Event struct {
 	// not required because tbd locations are allowed
 	// maybe should be required for like city or something
 	Location string `form:"location"`
+
+	Img_url string `form:"img_url"`
 }
 
 func connectDB() (*mongo.Client, error) {
