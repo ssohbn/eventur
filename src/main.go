@@ -36,6 +36,7 @@ func main() {
 
 		// If data binding is successful, return the user information
 		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
+		log.Printf("%+v\n", event)
 	})
 
 	r.GET("/ping", func(c *gin.Context) {
@@ -43,8 +44,10 @@ func main() {
 			"message": "pong",
 		})
 	})
+
 	//front end routes
 	r.StaticFile("/", "src/static/index.html")
+	r.StaticFile("/index", "src/static/index.html")
 	r.StaticFile("/create", "src/static/create.html")
 	r.StaticFile("/profile", "src/static/profile.html")
 	r.StaticFile("/events", "src/static/events.html")
