@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -15,6 +16,11 @@ import (
 
 // TYPES
 
+type User struct {
+	Username string `form:"username" binding:"required"`
+	Bio string `form:"bio" binding:"required"`
+}
+
 type Event struct {
 	Title string `form:"title" binding:"required"`
 	Blurb string `form:"blurb"`
@@ -27,20 +33,33 @@ type Event struct {
 	Location string `form:"location"`
 }
 
-func connectDB() *mongo.Client {
+func connectDB() (*mongo.Client, error) {
 	godotenv.Load()
 	uri := os.Getenv("MONGOURI")
 	if uri == "" {
 		log.Fatal("Set your 'MONGOURI' environment variable.")
 	}
+	// log.Println(uri)
 
 	client, err := mongo.Connect(options.Client().
 		ApplyURI(uri))
 	if err != nil {
-		return nil
+		return nil, errors.New(fmt.Sprintf("failed to connect to db:, %s"))
 	}
 
-	return client
+	return client, nil
+}
+
+func createUser(client *mongo.Client, user User) error {
+	coll := client.Database("eventure").Collection("users")
+	_, err := coll.InsertOne(context.TODO(), user)
+	if err != nil {
+		fmt.Println("Error inserting event:", err)
+		return err
+	} else {
+		fmt.Println("Inserted event successfully")
+	}
+	return nil
 }
 
 // create event

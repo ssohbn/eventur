@@ -3,16 +3,26 @@ package main
 import (
 	"log"
 	"net/http"
+	"context"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// connect to the database
-	DBclient := connectDB()
-	if DBclient == nil {
-		log.Fatal("Failed to connect to MongoDB")
+	DBclient, err := connectDB()
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %s", err)
 	}
+
+	log.Println("connected to db!")
+
+	defer func() {
+		if err := DBclient.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+
 
 	r := gin.Default()
 
@@ -27,10 +37,15 @@ func main() {
 			return
 		}
 
+		// try inserting into db
+		err := createEvent(DBclient, event)
+		if err != nil {
+			log.Printf("failed to create event %s", err)
+		}
+
 		// If data binding is successful, return the user information
 		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
 		log.Printf("%+v\n", event)
-		createEvent(DBclient, event)
 	})
 
 	r.GET("/ping", func(c *gin.Context) {
