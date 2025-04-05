@@ -3,7 +3,8 @@
   <script src="js/swipeEffect.js" defer></script>
   {{ template "head" }}
   <div id="event-container">
-    {{range .eventsList}} {{template "eventCard" (dict "ID" .Title)}} {{end}}
+    {{range .eventsList}} {{template "eventCard" ( dict "ID" .Title "Title"
+    .Title "IMG" .Img_url "Blurb" .Blurb)}} {{end}}
   </div>
   <div id="event-controls">
     <button
