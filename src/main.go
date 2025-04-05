@@ -1,14 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
-	"context"
 
 	"github.com/gin-gonic/gin"
-
-  // "html/template"
-
+	// "html/template"
 )
 
 func main() {
@@ -25,7 +23,6 @@ func main() {
 			panic(err)
 		}
 	}()
-
 
 	r := gin.Default()
 
@@ -56,33 +53,33 @@ func main() {
 			"message": "pong",
 		})
 	})
-  
-  r.LoadHTMLGlob("src/templates/**/*")
 
-  r.GET("/", func(c *gin.Context) {
-    c.HTML(http.StatusOK, "index.html", gin.H{
-      "title": "Main website",
-    })
-  })
-  r.GET("/create", func(c *gin.Context) {
-    c.HTML(http.StatusOK, "create.html", gin.H{
-      "title": "Main website",
-    })
-  })
-  r.GET("/profile", func(c *gin.Context) {
-    c.HTML(http.StatusOK, "profile.html", gin.H{
-      "title": "Main website",
-    })
-  })
-  r.GET("/events", func(c *gin.Context) {
-    c.HTML(http.StatusOK, "events.html", gin.H{
-      "title": "Main website",
-    })
-  })
+	r.LoadHTMLGlob("src/templates/**/*")
+
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "Main website",
+		})
+	})
+	r.GET("/create", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "create.html", gin.H{
+			"title": "Main website",
+		})
+	})
+	r.GET("/profile", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "profile.html", gin.H{
+			"title": "Main website",
+		})
+	})
+	r.GET("/events", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "events.html", gin.H{
+			"title": "Main website",
+		})
+	})
 
 	//front end routes
 	r.Static("/css", "src/static/css")
-
+	r.Static("/imgs", "src/static/imgs")
 
 	// run the server
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

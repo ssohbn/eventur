@@ -1,3 +1,26 @@
 <html>
-  Profile Body Here {{template "navbar"}}
+  {{ template "head" }}
+  <body>
+    <div class="profile-container">
+      <div class="profile-header">
+        <img
+          src="imgs/default_profile.jpg"
+          alt="Profile Picture"
+          class="profile-picture"
+        />
+        <h1 class="profile-name">{{ .User.Name }}</h1>
+        <p class="profile-bio">{{ .User.Bio }}</p>
+      </div>
+
+      <div class="profile-details">
+        <h2>Details</h2>
+        <ul>
+          <li><strong>Email:</strong> {{ .User.Email }}</li>
+          <li><strong>Location:</strong> {{ .User.Location }}</li>
+          <li><strong>Joined:</strong> {{ .User.JoinDate }}</li>
+        </ul>
+      </div>
+    </div>
+    {{ template "navbar" }}
+  </body>
 </html>
