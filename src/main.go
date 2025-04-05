@@ -3,10 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
-
-	"html/template"
+  
 	"time"
 )
 
@@ -46,19 +44,10 @@ func main() {
 		})
 	})
 	//front end routes
-	templ := template.Must(template.ParseFiles(
-		"src/templates/layout.html",
-		"src/templates/index.html",
-		"src/templates/partials/navbar.html", 
-	))
-
-	r.SetHTMLTemplate(templ)
-
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "layout.html", gin.H{
-			"Title": "Home Page",
-		})
-	})
+  r.StaticFile("/", "src/static/index.html")
+  r.StaticFile("/create", "src/static/create.html")
+  r.StaticFile("/profile", "src/static/profile.html")
+  r.StaticFile("/events", "src/static/events.html")
 
 	// run the server
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
