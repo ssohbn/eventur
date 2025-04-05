@@ -1,12 +1,10 @@
 {{define "eventCard"}}
-<div>
-  <div class="event-card">
-    <h1>picnic event</h1>
-    <img
-      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMWPB5Y0IU9M019G1kWJZ3uyk3MTPMoORFxQ&s"
-      alt="template"
-    />
-    <p>come have a template picnic!</p>
-  </div>
+<div class="event-card" id="{{.ID}}" onclick="swipeRight({{.ID}})">
+  <h1>picnic event</h1>
+  <img
+    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMWPB5Y0IU9M019G1kWJZ3uyk3MTPMoORFxQ&s"
+    alt="template"
+  />
+  <p>come have a template picnic!</p>
 </div>
 {{end}}

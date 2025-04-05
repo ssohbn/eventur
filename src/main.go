@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	
   "time"
+
+  "html/template"
 )
 
 func main() {
@@ -58,6 +60,18 @@ func main() {
 
   // front end routes
 
+
+  r.SetFuncMap(template.FuncMap{
+    "dict": func(values ...interface{}) map[string]interface{} {
+        m := make(map[string]interface{})
+        for i := 0; i < len(values); i += 2 {
+            key := values[i].(string)
+            m[key] = values[i+1]
+        }
+        return m
+    },
+})
+
   r.LoadHTMLGlob("src/templates/**/*")
 
 
@@ -87,6 +101,7 @@ func main() {
   })
 
 	//front end routes
+  r.Static("/js", "src/static/js")
 	r.Static("/css", "src/static/css")
 	r.Static("/imgs", "src/static/imgs")
 
