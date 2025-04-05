@@ -1,0 +1,47 @@
+
+* {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .event-card {
+    display: flex;
+    flex-direction: column;
+    background-color: pink;
+    width: 50vw;
+    aspect-ratio: 1/1.2;
+    padding: 20px;
+    border-radius: 10px;
+    margin: auto;
+  }
+
+  .event-card h1 {
+    margin: 0 auto;
+  }
+
+  #event-controls {
+    display: flex;
+    margin: 10vh auto 0 auto;
+    width: 85vw;
+  }
+
+  #event-controls button {
+    all:unset;
+    cursor: pointer;
+    background-color: grey;
+    color: white;
+    margin: auto;
+    aspect-ratio: 1/1;
+    width: 100px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 60px;
+  }

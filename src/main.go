@@ -44,6 +44,7 @@ func main() {
 			"message": "pong",
 		})
 	})
+  
 	//front end routes
   r.StaticFile("/", "src/static/index.html")
   r.StaticFile("/create", "src/static/create.html")

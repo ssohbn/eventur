@@ -1,69 +1,118 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>eventur - create</title>	
-	</head>
+  <head>
+    <title>eventur - create</title>
+    <link rel="stylesheet" type="text/css" href="css/navbar.css" />
+  </head>
 
-	<body>
-		<h2>Event Creation Form</h2>
+  <body>
+    <h2>Event Creation Form</h2>
 
-		<form id="eventCreateForm">
-			<label for="image">Event Image:</label>
-			<input type="file" id="image" name="image" accept="image/*" required>
-			<br>
+    <form id="eventCreateForm">
+      <label for="image">Event Image:</label>
+      <input type="file" id="image" name="image" accept="image/*" required />
+      <br />
 
-			<label for="title">Event Title:</label>
-			<input type="text" id="title" name="title" required>
-			<br>
+      <label for="title">Event Title:</label>
+      <input type="text" id="title" name="title" required />
+      <br />
 
-			<label for="description">Event Description:</label>
-			<textarea id="description" name="description" rows="4" required></textarea>
-			<br>
+      <label for="description">Event Description:</label>
+      <textarea
+        id="description"
+        name="description"
+        rows="4"
+        required
+      ></textarea>
+      <br />
 
-			<label for="blurb">Short Blurb:</label>
-			<textarea id="blurb" name="blurb" rows="2" ></textarea>
-			<br>
+      <label for="blurb">Short Blurb:</label>
+      <textarea id="blurb" name="blurb" rows="2"></textarea>
+      <br />
 
-			<label for="date">Event Date:</label>
-			<input type="date" id="date" name="date" >
-			<br>
+      <label for="date">Event Date:</label>
+      <input type="date" id="date" name="date" />
+      <br />
 
-			<label for="location">Event Location:</label>
-			<input type="text" id="location" name="location" required 
-			>
-			<br>
+      <label for="location">Event Location:</label>
+      <input type="text" id="location" name="location" required />
+      <br />
 
-			<button type="submit">Submit</button>
-		</form>
+      <button type="submit">Submit</button>
+    </form>
 
-		<script>
-			const form = document.getElementById('eventCreateForm');
+    <script>
+      const form = document.getElementById("eventCreateForm");
 
-			form.addEventListener('submit', async (event) => {
-				event.preventDefault();
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-				const formData = new FormData(form);
+        const formData = new FormData(form);
 
-				try {
-					const response = await fetch('api/createEvent', {
-						method: 'POST',
-						body: formData,
-					});
+        try {
+          const response = await fetch("api/createEvent", {
+            method: "POST",
+            body: formData,
+          });
 
-					console.log(response)
+          console.log(response);
 
-					if (response.ok) {
-						const result = await response.json();
-						console.log('Success:', result);
-					} else {
-						console.error('Error:', response.status);
-					}
-				} catch (error) {
-					console.error('Network error:', error);
-				}
-			});
-		</script>
+          if (response.ok) {
+            const result = await response.json();
+            console.log("Success:", result);
+          } else {
+            console.error("Error:", response.status);
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+        }
+      });
+    </script>
 
+    <div>
+      <nav>
+        <!-- SWIPE -->
+        <a href="index.html"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="size-5"
+          >
+            <path
+              d="M3.5 2.75a.75.75 0 0 0-1.5 0v14.5a.75.75 0 0 0 1.5 0v-4.392l1.657-.348a6.449 6.449 0 0 1 4.271.572 7.948 7.948 0 0 0 5.965.524l2.078-.64A.75.75 0 0 0 18 12.25v-8.5a.75.75 0 0 0-.904-.734l-2.38.501a7.25 7.25 0 0 1-4.186-.363l-.502-.2a8.75 8.75 0 0 0-5.053-.439l-1.475.31V2.75Z"
+            />
+          </svg>
+        </a>
 
-	</body>
+        <a href="create.html">
+          <!-- CREATE -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="size-5"
+          >
+            <path
+              d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
+            />
+          </svg>
+        </a>
+
+        <a href="profile.html">
+          <!-- PROFILE -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="size-5"
+          >
+            <path
+              d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z"
+            />
+          </svg>
+        </a>
+      </nav>
+    </div>
+  </body>
 </html>
