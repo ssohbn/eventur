@@ -105,7 +105,7 @@ func main() {
 			"img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spider-Man.jpg/1200px-Spider-Man.jpg",
 			"name":    user.Username,
 			"bio":     user.Bio,
-			"events":  getEventsByDirector(DBclient, "Larry"),
+			"events":  getEventsByDirector(DBclient,user.Username),
 		})
 	})
 
