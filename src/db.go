@@ -28,8 +28,9 @@ type User struct {
 	// email binding fails on blank email but
 	// the field shouldnt be required.
 	// I dont care to write my own function that binds it.
-	Email string `form:"email" bson:"email"` // binding:"email"`
-	Bio   string `form:"bio" bson:"bio"`
+	Email   string `form:"email" bson:"email"` // binding:"email"`
+	Bio     string `form:"bio" bson:"bio"`
+	Img_url string `form:"image" bson:"img_url"`
 }
 
 type Event struct {

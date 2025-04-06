@@ -159,7 +159,7 @@ func main() {
 		}
 		c.HTML(http.StatusOK, "profile.html", gin.H{
 			"title":   "Main website",
-			"img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spider-Man.jpg/1200px-Spider-Man.jpg",
+			"img_url": user.Img_url,
 			"name":    user.Username,
 			"bio":     user.Bio,
 			"events":  getEventsByDirector(DBclient, user.Username),
@@ -245,7 +245,7 @@ func main() {
 
 		// If data binding is successful, return the user information
 		// WE DIRELY NEED TO ACCEPT THESE HEADERS IN JAVASCRIPT
-		// THE ENTIRE PROGRAM IS SOFTLOCKED UNTIL THIS IS ACCEPTED. 
+		// THE ENTIRE PROGRAM IS SOFTLOCKED UNTIL THIS IS ACCEPTED.
 		// DO THIS IN SIGNUP ON THE RESPONSE FROM FETCH REQUEST TO THIS API ENDPOINT
 		// FIX
 		// FIX
