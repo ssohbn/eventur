@@ -2,14 +2,48 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/golang-jwt/jwt/v4"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 
 	"html/template"
 )
+
+func accounts(db *mongo.Client) gin.Accounts {
+	accounts := make(gin.Accounts)
+	users, err := allUsers(db); if err != nil {
+		log.Panicf("failed to access acounts! this is very bad. %s\n", err)
+	}
+
+	for _, user := range users {
+		accounts[user.Username] = user.Password
+	}
+
+	return accounts
+}
+
+func usernameFromAuthorization(c *gin.Context) (string, error) {
+	header := c.Request.Header["Authorization"][0]
+	combo := strings.Split(header, " ")[1]
+
+	authbytes, err := base64.StdEncoding.DecodeString(combo)
+	if err != nil {
+		return "", errors.New(fmt.Sprintf("failed to decode authorization header: %s\n", err))
+	}
+
+	log.Printf("authbytes: %s, authorizationheader: %s", authbytes, header)
+	message := string(authbytes)
+	log.Printf("message decoded: %s", message)
+	username := strings.Split(message, ":")[0]
+
+	return username, nil
+}
 
 func main() {
 	// connect to the database
@@ -26,7 +60,7 @@ func main() {
 	}()
 
 	r := gin.Default()
-
+	
 	// var jwtKey = []byte("my_secret_key")
 	// var tokens []string
 	//
@@ -35,8 +69,15 @@ func main() {
 	// 	jwt.RegisteredClaims
 	// }
 
-	r.POST("/api/createEvent", func(c *gin.Context) {
-		log.Println("recv'd ")
+	r.POST("/api/createEvent", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+
+		username, err := usernameFromAuthorization(c); if err != nil {
+			log.Printf("failed to get username in createEvent: %s\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		log.Println(fmt.Sprintf("recv'd createEvent from %s from %s", username, username))
 		var event Event
 
 		// bind form data (WHICH SHOULD BIND) to event and check if error is produced (not nil)
@@ -47,7 +88,7 @@ func main() {
 		}
 
 		// try inserting into db
-		err := createEvent(DBclient, event)
+		err = createEvent(DBclient, event)
 		if err != nil {
 			log.Printf("failed to create event %s", err)
 		}
@@ -56,11 +97,12 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
 		log.Printf("%+v\n", event)
 	})
-	r.GET("/api/events", func(c *gin.Context) {
+
+	r.GET("/api/events", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		c.JSON(http.StatusOK, getEvents(DBclient))
 	})
 
-	r.GET("/api/users", func(c *gin.Context) {
+	r.GET("/api/users", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		// pray no error.
 		users, _ := allUsers(DBclient)
 
@@ -80,7 +122,7 @@ func main() {
 	})
 	r.LoadHTMLGlob("src/templates/**/*")
 
-	r.GET("/", func(c *gin.Context) {
+	r.GET("/", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":      "Main website",
 			"isIndex":    true,
@@ -88,13 +130,13 @@ func main() {
 		})
 	})
 
-	r.GET("/create", func(c *gin.Context) {
+	r.GET("/create", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "create.html", gin.H{
 			"title": "Main website",
 		})
 	})
 
-	r.GET("/profile/:name", func(c *gin.Context) {
+	r.GET("/profile/:name", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		name := c.Param("name")
 		user, err := findUser(DBclient, name)
 		if err != nil {
@@ -109,7 +151,7 @@ func main() {
 		})
 	})
 
-	r.GET("/events", func(c *gin.Context) {
+	r.GET("/events", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "events.html", gin.H{
 			"title":    "Main website",
 			"isEvents": true,
@@ -129,7 +171,7 @@ func main() {
 		})
 	})
 
-  r.GET("/filter", func(c *gin.Context) {
+  r.GET("/filter", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "filter.html", gin.H{
 			"title": "Main website",
 		})
