@@ -46,6 +46,14 @@ func usernameFromAuthorization(c *gin.Context) (string, error) {
 	return username, nil
 }
 
+func hasAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		_, ok := c.Request.Header["Authorization"]; if !ok {
+			c.Redirect(http.StatusFound, "/signup")
+		}
+	}
+}
+
 func main() {
 	// connect to the database
 	DBclient, err := connectDB()
@@ -61,15 +69,6 @@ func main() {
 	}()
 
 	r := gin.Default()
-
-	// var jwtKey = []byte("my_secret_key")
-	// var tokens []string
-	//
-	// type Claims struct {
-	// 	Username string `json:"username"`
-	// 	jwt.RegisteredClaims
-	// }
-
 	r.POST("/api/createEvent", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 
 		username, err := usernameFromAuthorization(c)
@@ -124,7 +123,7 @@ func main() {
 	})
 	r.LoadHTMLGlob("src/templates/**/*")
 
-	r.GET("/", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	r.GET("/", hasAuth(), gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":      "Main website",
 			"isIndex":    true,
@@ -168,9 +167,10 @@ func main() {
 	})
 
 	r.GET("/login", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "login.html", gin.H{
-			"title": "Login Page",
-		})
+		c.Redirect(http.StatusMovedPermanently, "/")
+		// c.HTML(http.StatusOK, "login.html", gin.H{
+		// 	"title": "Login Page",
+		// })
 	})
 
 	r.GET("/filter", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
@@ -197,6 +197,14 @@ func main() {
 
 		// If data binding is successful, return the user information
 		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user})
+
+
+		data := fmt.Sprintf("%s:%s", user.Username, user.Password)
+		encoded := base64.StdEncoding.EncodeToString([]byte(data))
+		header := fmt.Sprintf("Basic %s", encoded)
+
+		log.Printf("data %s, bytes %v\n", data, header)
+		c.Header("Authorization", header)
 		log.Printf("%+v\n", user)
 	})
 
