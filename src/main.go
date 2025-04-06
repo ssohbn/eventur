@@ -138,6 +138,17 @@ func main() {
 		})
 	})
 
+	r.GET("/profile", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+		name, err := usernameFromAuthorization(c)
+		if err != nil {
+			log.Printf("failed to get username in profile: %s\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		// redirect to /profile/:name
+		c.Redirect(http.StatusFound, "/profile/"+name)
+	})
+
 	r.GET("/profile/:name", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		name := c.Param("name")
 		user, err := findUser(DBclient, name)
