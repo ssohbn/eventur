@@ -154,10 +154,16 @@ func main() {
 	})
 
 	r.GET("/events", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
-		c.HTML(http.StatusOK, "events.html", gin.H{
+		username, err := usernameFromAuthorization(c)
+    if err != nil {
+      log.Printf("failed to get username in createEvent: %s\n", err)
+      c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+      return
+    }
+    c.HTML(http.StatusOK, "events.html", gin.H{
 			"title":    "Main website",
 			"isEvents": true,
-			"Events":   getEvents(DBclient),
+			"Events":   getInterestedEvents(DBclient, username),
 		})
 	})
 
@@ -178,6 +184,27 @@ func main() {
 			"title": "Main website",
 		})
 	})
+ 
+  r.POST("/api/interested", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+   type FormData struct {
+    EventName string `form:"eventName"`
+   }
+    var form FormData
+    username, err := usernameFromAuthorization(c)   
+    if err != nil { 
+      log.Printf("failed to get username in interested: %s\n", err)
+      c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+      return
+    }
+    err = c.ShouldBindJSON(&form);
+    if err != nil {
+      c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+      log.Printf("errored:%s\n", err)
+      return
+    }
+    log.Println("event",form.EventName);
+    addInterest(DBclient, Interest{Username: username, Event: form.EventName})
+  })
 
 	r.POST("/api/signup", func(c *gin.Context) {
 		log.Println("recv'd ")

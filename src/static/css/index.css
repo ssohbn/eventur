@@ -62,8 +62,8 @@
 
   #event-filter-settings {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-direction: column;
+    /* flex-wrap: ; */
     position: absolute;
     top: 0;
     left: 0;
@@ -79,9 +79,10 @@
     height: 30px;
     width: fit-content;
     align-items: center;
-    background-color: lightgray;
+    background-color: white;
     padding: 1px;
     border: 1px solid gray;
+    margin: 5px 0;
   }
   
   #event-filter-settings svg {

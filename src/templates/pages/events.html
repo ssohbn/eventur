@@ -4,8 +4,7 @@
   <h1>I'm Interested!</h1>
 
   <div>
-    <!-- <h3>search events</h3>
-    <label for="site-search">Search the site:</label> -->
+    <label for="site-search">Search the site:</label>
     <label for="site-search">Search Events:</label>
     <input type="search" id="site-search" name="q" />
     <button>Search</button>
@@ -13,6 +12,6 @@
 
   <!-- generate with js thru db-->
   <div>{{ range .Events }} {{ template "eventListing" . }} {{ end }}</div>
-
+  <div id="interests-container"></div>
   {{template "navbar" .}}
 </html>
