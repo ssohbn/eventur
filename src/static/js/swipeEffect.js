@@ -5,6 +5,7 @@ const init = async () => {
   const res = await fetch("/api/events");
   cards = await res.json();
   updateBackgound(cards[cards.length - i - 1].Img_url);
+  revealCard();
 };
 init();
 
@@ -23,6 +24,7 @@ const swipeLeft = () => {
     fadeInOut("Not interested!", "#f56e64");
     return;
   }
+  revealCard();
   updateBackgound(cards[cards.length - i - 1].Img_url);
   fadeInOut("Not interested!", "#f56e64");
 };
@@ -39,6 +41,7 @@ const swipeRight = () => {
     fadeInOut("Sounds Fun!", "#73f564");
     return;
   }
+  revealCard();
   updateBackgound(cards[cards.length - i - 1].Img_url);
   fadeInOut("Sounds Fun!", "#73f564");
 };
@@ -72,13 +75,22 @@ const showInterest = async (event) => {
   console.log(event, res);
 };
 
+const revealCard = () => {
+  id = cards.length - i - 1;
+  const card = document.getElementById(id);
+  card.style.opacity = 1;
+};
+
 const removeControls = () => {
   const controls = document.getElementById("event-controls");
   controls.style.display = "none";
   updateBackgound("");
+  //show message
+  const message = document.getElementById("no-events");
+  message.style.opacity = 1;
 };
 
-const showControls = () => {
+const revealControls = () => {
   const controls = document.getElementById("event-controls");
   controls.style.display = "default";
 };

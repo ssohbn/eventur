@@ -10,7 +10,8 @@
     background-size: cover;
   }
 
-  .no-events {
+  #no-events {
+    opacity: 0;
     z-index: -1;
     position: absolute;
     width: 50vw;
@@ -35,6 +36,7 @@
     height: 100%;
     padding: 20px;
     border-radius: 10px;
+    opacity: 0;
   }
 
   .event-card h1 {
