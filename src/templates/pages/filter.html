@@ -1,1 +1,18 @@
 {{template "head" .}} {{template "navbar"}}
+<link rel="stylesheet" href="/css/filter.css" />
+<body>
+  <div id="close">
+    <a href="/">Back</a>
+  </div>
+  <main>
+    <div id="filter-box">
+      <h3>Filters</h3>
+      <ul>
+        <li><label>Date</label><input type="date" /> <br /></li>
+        <li><label>Tags</label><input /> <br /></li>
+        <li><label>Distance</label><input /></li>
+      </ul>
+    </div>
+    <button id="submit"><a href="/">Get Events!</a></button>
+  </main>
+</body>
