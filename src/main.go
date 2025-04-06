@@ -48,13 +48,13 @@ func usernameFromAuthorization(c *gin.Context) (string, error) {
 
 func hasAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// c.Next()
+		c.Next() // skip this god awful broken middleware
 		header, ok := c.Request.Header["Authorization"]
 		log.Printf("header gunk: %s\n", header)
 		if !ok {
 			c.Redirect(http.StatusFound, "/signup")
 		}
-		c.Next()
+		// c.Next()
 	}
 }
 
