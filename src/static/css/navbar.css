@@ -23,6 +23,7 @@ nav {
     color: inherit;
     width: 15vw;
     aspect-ratio: 1/1;
+    display: flex;
   }
 
   #impulse-button {
@@ -38,4 +39,9 @@ nav {
 
   nav svg{
     width: 100%;
+  }
+
+  nav img {
+    aspect-ratio: 1/2;
+    width: 120%;
   }

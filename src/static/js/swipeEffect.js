@@ -4,20 +4,17 @@ let i = 0;
 const init = async () => {
   const res = await fetch("/api/events");
   cards = await res.json();
-  console.log(cards);
   updateBackgound(cards[cards.length - i - 1].Img_url);
 };
 init();
 
 const updateBackgound = (img) => {
   document.body.style.backgroundImage = `url(${img})`;
-  console.log("image", img);
 };
 
 const swipeLeft = () => {
   if (i >= cards.length) return;
   const card = document.getElementById(cards.length - i - 1);
-  console.log(card);
   card.classList.add("swipe-left-fade");
   if (i < cards.length - 1) {
     i += 1;
@@ -33,8 +30,8 @@ const swipeLeft = () => {
 const swipeRight = () => {
   if (i >= cards.length) return;
   const card = document.getElementById(cards.length - i - 1);
-  console.log(card);
   card.classList.add("swipe-right-fade");
+  showInterest(cards[cards.length - i - 1].Title);
   if (i < cards.length - 1) {
     i += 1;
   } else {
@@ -59,6 +56,20 @@ const fadeInOut = (message, color) => {
   setTimeout(() => {
     popup.classList.remove("fade-out");
   }, delay * 2);
+};
+
+const showInterest = async (event) => {
+  const config = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      eventName: event,
+    }),
+  };
+  const res = await fetch("/api/interested", config);
+  console.log(event, res);
 };
 
 const removeControls = () => {
