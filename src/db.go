@@ -187,6 +187,18 @@ func getUser(client *mongo.Client) []User {
 	return results
 }
 
+func addInterest(client *mongo.Client, interest Interest) error {
+	coll := client.Database("eventure").Collection("interest")
+	_, err := coll.InsertOne(context.TODO(), interest)
+	if err != nil {
+		fmt.Println("Error inserting interest:", err)
+		return err
+	} else {
+		fmt.Println("Inserted interest successfully")
+	}
+	return nil
+}
+
 // get events interested by user
 func getInterestedEvents(client *mongo.Client, username string) []Event {
 	coll := client.Database("eventure").Collection("interest")
