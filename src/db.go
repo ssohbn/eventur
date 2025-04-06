@@ -47,6 +47,11 @@ type Event struct {
 	Img_url string `form:"img_url" bson:"img_url"`
 }
 
+type Interest struct {
+	Username string `form:"username" binding:"required" bson:"username"`
+	Event    string `form:"event" binding:"required" bson:"event"`
+}
+
 func connectDB() (*mongo.Client, error) {
 	godotenv.Load()
 	uri := os.Getenv("MONGOURI")
@@ -180,4 +185,38 @@ func getUser(client *mongo.Client) []User {
 	}
 
 	return results
+}
+
+// get events interested by user
+func getInterestedEvents(client *mongo.Client, username string) []Event {
+	coll := client.Database("eventure").Collection("interest")
+
+	filter := bson.M{"username": username}
+	cursor, err := coll.Find(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+	var eventNames []Interest
+	if err = cursor.All(context.TODO(), &eventNames); err != nil {
+		panic(err)
+	}
+
+	// get events from event names
+	var events []Event
+	for _, eventName := range eventNames {
+		eventColl := client.Database("eventure").Collection("events")
+		eventFilter := bson.M{"title": eventName.Event}
+		eventCursor, err := eventColl.Find(context.TODO(), eventFilter)
+		if err != nil {
+			panic(err)
+		}
+
+		var result []Event
+		if err = eventCursor.All(context.TODO(), &result); err != nil {
+			panic(err)
+		}
+		events = append(events, result...)
+	}
+
+	return events
 }

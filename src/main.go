@@ -17,7 +17,8 @@ import (
 
 func accounts(db *mongo.Client) gin.Accounts {
 	accounts := make(gin.Accounts)
-	users, err := allUsers(db); if err != nil {
+	users, err := allUsers(db)
+	if err != nil {
 		log.Panicf("failed to access acounts! this is very bad. %s\n", err)
 	}
 
@@ -60,7 +61,7 @@ func main() {
 	}()
 
 	r := gin.Default()
-	
+
 	// var jwtKey = []byte("my_secret_key")
 	// var tokens []string
 	//
@@ -71,7 +72,8 @@ func main() {
 
 	r.POST("/api/createEvent", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 
-		username, err := usernameFromAuthorization(c); if err != nil {
+		username, err := usernameFromAuthorization(c)
+		if err != nil {
 			log.Printf("failed to get username in createEvent: %s\n", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -147,7 +149,7 @@ func main() {
 			"img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spider-Man.jpg/1200px-Spider-Man.jpg",
 			"name":    user.Username,
 			"bio":     user.Bio,
-			"events":  getEventsByDirector(DBclient,user.Username),
+			"events":  getEventsByDirector(DBclient, user.Username),
 		})
 	})
 
@@ -171,7 +173,7 @@ func main() {
 		})
 	})
 
-  r.GET("/filter", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	r.GET("/filter", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "filter.html", gin.H{
 			"title": "Main website",
 		})
