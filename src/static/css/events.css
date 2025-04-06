@@ -30,3 +30,7 @@
 	all:unset;
 	padding: 3px;
 }
+
+.event-listing button a {
+	all: unset;
+}

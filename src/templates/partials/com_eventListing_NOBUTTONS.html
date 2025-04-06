@@ -1,19 +1,9 @@
-{{ define "eventListing" }}
+{{ define "eventListingnobuttons" }}
 <div class="event-listing" id="{{.Title}}">
   <img src="{{ .Img_url }}" alt="Event Image" />
   <div class="event-listing-details">
     <h1 class="event-listing-title">{{ .Title }}</h1>
     <p class="event-listing-blurb">{{ .Blurb }}</p>
-    <!-- Check if the ShowButtons boolean is true -->
-    <button
-      style="background-color: red; color: white"
-      onclick="removeElement({{.Title}})"
-    >
-      Miss
-    </button>
-    <button style="background-color: green; color: white" class="rsvp-button">
-      <a href="/RSVP/{{.Title}}">RSVP</a>
-    </button>
   </div>
 </div>
 <script>
