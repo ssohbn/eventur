@@ -206,17 +206,26 @@ func main() {
 			log.Printf("failed to create user: %s", err)
 		}
 
-		// If data binding is successful, return the user information
-		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user})
-
-
 		data := fmt.Sprintf("%s:%s", user.Username, user.Password)
 		encoded := base64.StdEncoding.EncodeToString([]byte(data))
 		header := fmt.Sprintf("Basic %s", encoded)
 
 		log.Printf("data %s, bytes %v\n", data, header)
-		c.Header("Authorization", header)
 		log.Printf("%+v\n", user)
+
+		// If data binding is successful, return the user information
+		// WE DIRELY NEED TO ACCEPT THESE HEADERS IN JAVASCRIPT
+		// THE ENTIRE PROGRAM IS SOFTLOCKED UNTIL THIS IS ACCEPTED. 
+		// DO THIS IN SIGNUP ON THE RESPONSE FROM FETCH REQUEST TO THIS API ENDPOINT
+		// FIX
+		// FIX
+		// FIX
+		// FIX
+		// FIX
+		// FIX
+		// FIX
+		// FIX
+		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user, "Authorization": header})
 	})
 
 	r.POST("/api/login", func(c *gin.Context) {
