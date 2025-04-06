@@ -71,14 +71,17 @@
     padding: 15px;
   }
 
-  #event-filter-settings button {
+  #event-filter-settings a {
+    all: unset;
     display: flex;
     overflow-y: hidden;
     opacity: 0.75;
     height: 30px;
     width: fit-content;
     align-items: center;
-    justify-content: center;
+    background-color: lightgray;
+    padding: 1px;
+    border: 1px solid gray;
   }
   
   #event-filter-settings svg {

@@ -129,6 +129,12 @@ func main() {
 		})
 	})
 
+  r.GET("/filter", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "filter.html", gin.H{
+			"title": "Main website",
+		})
+	})
+
 	r.POST("/api/signup", func(c *gin.Context) {
 		log.Println("recv'd ")
 
