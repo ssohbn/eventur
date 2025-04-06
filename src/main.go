@@ -48,11 +48,13 @@ func usernameFromAuthorization(c *gin.Context) (string, error) {
 
 func hasAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Next()
-		_, ok := c.Request.Header["Authorization"]
+		// c.Next()
+		header, ok := c.Request.Header["Authorization"]
+		log.Printf("header gunk: %s\n", header)
 		if !ok {
 			c.Redirect(http.StatusFound, "/signup")
 		}
+		c.Next()
 	}
 }
 
@@ -255,6 +257,8 @@ func main() {
 		// FIX
 		// FIX
 		// FIX
+		c.Header("WWW-Authenticate", `Basic realm="dear god help"`)
+		// c.Request.SetBasicAuth(user.Username, user.Password)
 		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user, "Authorization": header})
 	})
 

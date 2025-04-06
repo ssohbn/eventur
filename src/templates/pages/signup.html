@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	{{ template "head" . }}
 	<h2>Event Creation Form</h2>
@@ -29,14 +30,12 @@
 					body: formData,
 				});
 
-				console.log(response);
-				data = await response.json()
-
 				if (response.ok) {
 					const result = await response.json();
 					console.log("Success:", result);
-					window.location.href = "/login";
-					localStorage.setItem('Authorization', data.Authorization);
+
+					// localStorage.setItem('Authorization', result.Authorization);
+					// window.location.href = "/";
 				} else {
 					console.error("Error:", response.status);
 				}
