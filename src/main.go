@@ -48,6 +48,7 @@ func usernameFromAuthorization(c *gin.Context) (string, error) {
 
 func hasAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.Next()
 		_, ok := c.Request.Header["Authorization"]
 		if !ok {
 			c.Redirect(http.StatusFound, "/signup")
