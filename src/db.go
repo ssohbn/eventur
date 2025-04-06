@@ -44,7 +44,7 @@ type Event struct {
 	// maybe should be required for like city or something
 	Location string `form:"location" bson:"location"`
 
-	Img_url string `form:"img_url" bson:"img_url"`
+	Img_url string `form:"image" bson:"img_url"`
 }
 
 type Interest struct {
