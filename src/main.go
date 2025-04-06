@@ -151,6 +151,12 @@ func main() {
 		c.Redirect(http.StatusFound, "/profile/"+name)
 	})
 
+  r.GET("/RSVP/:event", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+		c.HTML(http.StatusOK, "rsvp.html", gin.H{
+			"title": "Main website",
+		})
+	})
+
 	r.GET("/profile/:name", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 		name := c.Param("name")
 		user, err := findUser(DBclient, name)

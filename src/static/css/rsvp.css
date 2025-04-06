@@ -1,0 +1,26 @@
+body {
+    background-color: lightgray;
+    display: flex;
+}
+
+#question-group {
+    margin: 50px auto 100px auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.question {
+    margin: 15px 0;
+}
+
+.question textarea {
+    min-height: 50px;
+    resize: vertical;
+}
+
+#submit {
+    margin: 0 auto;
+    background-color: green;
+    color: white;
+    padding: 10px;
+}

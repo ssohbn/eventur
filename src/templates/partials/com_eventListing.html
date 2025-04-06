@@ -1,11 +1,26 @@
 {{ define "eventListing" }}
-<div class="event-listing">
+<div class="event-listing" id="{{.Title}}">
   <img src="{{ .Img_url }}" alt="Event Image" />
   <div class="event-listing-details">
     <h1 class="event-listing-title">{{ .Title }}</h1>
     <p class="event-listing-blurb">{{ .Blurb }}</p>
-    <button style="background-color: red; color: white">Miss</button>
-    <button style="background-color: green; color: white">RSVP</button>
+    <button
+      style="background-color: red; color: white"
+      onclick="removeElement({{.Title}})"
+    >
+      Miss
+    </button>
+    <button style="background-color: green; color: white" class="rsvp-button">
+      <a href="/RSVP/{{.Title}}">RSVP</a>
+    </button>
   </div>
 </div>
+<script>
+  function removeElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.parentNode.removeChild(element);
+    }
+  }
+</script>
 {{ end }}
