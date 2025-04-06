@@ -36,6 +36,8 @@ type User struct {
 type Event struct {
 	Title    string `form:"title" binding:"required" bson:"title"`
 	Blurb    string `form:"blurb" bson:"blurb"`
+	Description string `form:"description" bson:"description" binding:"required"`
+	Tags string `bson:"tags"`
 	Director string
 
 	// not required because tbd dates are allowed

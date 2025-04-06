@@ -1,12 +1,16 @@
 package main
 
 import (
+	"io"
+	"encoding/json"
+	"github.com/joho/godotenv"
 	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -59,6 +63,9 @@ func hasAuth() gin.HandlerFunc {
 }
 
 func main() {
+	godotenv.Load()
+	GEMINI_APIKEY := os.Getenv("GEMINI_APIKEY")
+
 	// connect to the database
 	DBclient, err := connectDB()
 	if err != nil {
@@ -92,16 +99,53 @@ func main() {
 			return
 		}
 		event.Director = username
+		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", GEMINI_APIKEY)
+		jsonData := fmt.Sprintf(`{"contents": [{"parts":[{"text": "generate a simple list of tags for a new event listing. give only the tags separated by commas.\n Title: %s\nBlurb: %s\n, Description: %s\n"}]}]}`, event.Title, event.Blurb, event.Description)
 
-		// try inserting into db
-		err = createEvent(DBclient, event)
+		log.Printf("key: %s\n", string(GEMINI_APIKEY))
+		log.Printf("url: %s\n", string(url))
+		log.Printf("jsondata: %s\n", string(jsonData))
+
+		resp, err := http.Post(url, "application/json", strings.NewReader(jsonData))
 		if err != nil {
-			log.Printf("failed to create event %s", err)
+			log.Fatalf("Error making POST request: %v", err)
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalf("Error reading response body: %v", err)
 		}
 
-		// If data binding is successful, return the user information
-		c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
-		log.Printf("%+v\n", event)
+		log.Println("Status Code:", resp.StatusCode)
+		log.Println("Response Body:", string(body))
+
+		// good paste
+		var data struct {
+			Candidates []struct {
+				Content struct {
+					Parts []struct {
+						Text string `json:"text"`
+					} `json:"parts"`
+				} `json:"content"`
+			} `json:"candidates"`
+		}
+
+		err = json.Unmarshal([]byte(body), &data)
+        if err != nil {
+                log.Fatalf("Error unmarshalling JSON: %v", err)
+        }
+		tags := data.Candidates[0].Content.Parts[0].Text
+		event.Tags = tags
+
+		log.Println(tags)
+
+		err = createEvent(DBclient, event)
+		if err != nil {
+			log.Printf("failed to create event: %+v, err: %s", event, err)
+			return
+		}
+
 	})
 
 	r.GET("/api/events", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
