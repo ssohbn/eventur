@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 
@@ -15,46 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-// TYPES
-
-type User struct {
-	Username string `form:"username" binding:"required" bson:"username"`
-	Password string `form:"password" binding:"required" bson:"password"`
-	Token    string `bson:"token"`
-
-	// not checking the email binding is sketchy!
-	// recall: we are at a hackathon
-	//
-	// email binding fails on blank email but
-	// the field shouldnt be required.
-	// I dont care to write my own function that binds it.
-	Email   string `form:"email" bson:"email"` // binding:"email"`
-	Bio     string `form:"bio" bson:"bio"`
-	Img_url string `form:"image" bson:"img_url"`
-}
-
-type Event struct {
-	Title    string `form:"title" binding:"required" bson:"title"`
-	Blurb    string `form:"blurb" bson:"blurb"`
-	Description string `form:"description" bson:"description" binding:"required"`
-	Tags string `bson:"tags"`
-	Director string
-
-	// not required because tbd dates are allowed
-	Date time.Time `form:"date" time_format:"2006-01-02" bson:"time"`
-
-	// not required because tbd locations are allowed
-	// maybe should be required for like city or something
-	Location string `form:"location" bson:"location"`
-
-	Img_url string `form:"image" bson:"img_url"`
-}
-
-type Interest struct {
-	Username string `form:"username" binding:"required" bson:"username"`
-	Event    string `form:"event" binding:"required" bson:"event"`
-}
-
+// Returns mongodb client thingy uhm remember to disconnect after
 func connectDB() (*mongo.Client, error) {
 	godotenv.Load()
 	uri := os.Getenv("MONGOURI")
@@ -78,10 +38,10 @@ func createUser(client *mongo.Client, user User) error {
 	// we shold have unique names but  EH.  WHO CARE.  HACKATHON
 	_, err := coll.InsertOne(context.TODO(), user)
 	if err != nil {
-		fmt.Println("Error inserting event:", err)
+		fmt.Println("Error inserting user:", err)
 		return err
 	} else {
-		fmt.Println("Inserted event successfully")
+		fmt.Println("Inserted user successfully")
 	}
 	return nil
 }

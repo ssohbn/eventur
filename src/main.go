@@ -1,13 +1,13 @@
 package main
 
 import (
-	"io"
-	"encoding/json"
-	"github.com/joho/godotenv"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/joho/godotenv"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -33,6 +33,10 @@ func accounts(db *mongo.Client) gin.Accounts {
 	return accounts
 }
 
+// TODO: deprecate
+// username should be passed thru gin context 
+// should be fairly elegant to set thru authorization middleware
+// need to write the middleware...
 func usernameFromAuthorization(c *gin.Context) (string, error) {
 	header := c.Request.Header["Authorization"][0]
 	combo := strings.Split(header, " ")[1]
@@ -62,10 +66,164 @@ func hasAuth() gin.HandlerFunc {
 	}
 }
 
-func main() {
-	godotenv.Load()
-	GEMINI_APIKEY := os.Getenv("GEMINI_APIKEY")
+type Api struct {
+	gemini_key string
+	mongo_uri  string
+	dbclient   *mongo.Client
+}
 
+func (api *Api) createEventRoute(c *gin.Context) {
+	username, err := usernameFromAuthorization(c)
+	if err != nil {
+		log.Printf("failed to get username in createEvent: %s\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	log.Println(fmt.Sprintf("recv'd createEvent from %s from %s", username, username))
+	var event Event
+
+	// bind form data (WHICH SHOULD BIND) to event and check if error is produced (not nil)
+	// (sorta weird syntax)
+	if err := c.ShouldBind(&event); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	event.Director = username
+
+	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", api.gemini_key)
+	prompt := fmt.Sprintf(`
+		Generate a simple list of tags for a new event listing. give only the tags separated by commas. 
+		Title: %s
+		Blurb: %s
+		Description: %s
+	`, event.Title, event.Blurb, event.Description)
+
+	jsonData := fmt.Sprintf(`{
+		"contents": [
+			{"parts": [
+				{"text": %s}
+			]}
+		]}`, prompt)
+
+	log.Printf("key: %s\n", string(api.gemini_key))
+	log.Printf("url: %s\n", string(url))
+	log.Printf("jsondata: %s\n", string(jsonData))
+
+	resp, err := http.Post(url, "application/json", strings.NewReader(jsonData))
+	if err != nil {
+		log.Fatalf("Error making POST request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("Error reading response body: %v", err)
+	}
+
+	log.Println("Status Code:", resp.StatusCode)
+	log.Println("Response Body:", string(body))
+
+	// good paste
+	var data struct {
+		Candidates []struct {
+			Content struct {
+				Parts []struct {
+					Text string `json:"text"`
+				} `json:"parts"`
+			} `json:"content"`
+		} `json:"candidates"`
+	}
+
+	err = json.Unmarshal([]byte(body), &data)
+	if err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v", err)
+	}
+	tags := data.Candidates[0].Content.Parts[0].Text
+	event.Tags = tags
+
+	log.Println(tags)
+
+	err = createEvent(api.dbclient, event)
+	if err != nil {
+		log.Printf("failed to create event: %+v, err: %s", event, err)
+		return
+	}
+}
+
+func (api *Api) events(c *gin.Context) {
+	c.JSON(http.StatusOK, getEvents(api.dbclient))
+}
+
+func (api *Api) listUsers(c *gin.Context) {
+	// pray no error.
+	users, _ := allUsers(api.dbclient)
+
+	c.JSON(http.StatusOK, users)
+}
+
+func (api *Api) signup(c *gin.Context) {
+	log.Println("recv'd ")
+
+	var user User
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Printf("errored:%s\n", err)
+		return
+	}
+
+	// try inserting into db
+	err := createUser(api.dbclient, user)
+	if err != nil {
+		log.Printf("failed to create user: %s", err)
+	}
+
+	data := fmt.Sprintf("%s:%s", user.Username, user.Password)
+	encoded := base64.StdEncoding.EncodeToString([]byte(data))
+	header := fmt.Sprintf("Basic %s", encoded)
+
+	log.Printf("data %s, bytes %v\n", data, header)
+	log.Printf("%+v\n", user)
+
+	// If data binding is successful, return the user information
+	// WE DIRELY NEED TO ACCEPT THESE HEADERS IN JAVASCRIPT
+	// THE ENTIRE PROGRAM IS SOFTLOCKED UNTIL THIS IS ACCEPTED.
+	// DO THIS IN SIGNUP ON THE RESPONSE FROM FETCH REQUEST TO THIS API ENDPOINT
+	// FIX
+	// FIX
+	// FIX
+	// FIX
+	// FIX
+	// FIX
+	// FIX
+	// FIX
+	c.Header("WWW-Authenticate", `Basic realm="dear god help"`)
+	// c.Request.SetBasicAuth(user.Username, user.Password)
+	c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user, "Authorization": header})
+}
+func (api *Api) interested(c *gin.Context) {
+	type FormData struct {
+		EventName string `form:"eventName"`
+	}
+	var form FormData
+	username, err := usernameFromAuthorization(c)
+	if err != nil {
+		log.Printf("failed to get username in interested: %s\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = c.ShouldBindJSON(&form)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Printf("errored:%s\n", err)
+		return
+	}
+	log.Println("event", form.EventName)
+	addInterest(api.dbclient, Interest{Username: username, Event: form.EventName})
+}
+
+func main() {
 	// connect to the database
 	DBclient, err := connectDB()
 	if err != nil {
@@ -75,104 +233,35 @@ func main() {
 
 	defer func() {
 		if err := DBclient.Disconnect(context.TODO()); err != nil {
-			panic(err)
+			log.Fatalf("failed to disconnect from mongodb client cleanly: %s", err)
 		}
 	}()
 
+	godotenv.Load()
+	api := Api{
+		gemini_key: os.Getenv("GEMINI_APIKEY"),
+		mongo_uri:  os.Getenv("MONGOURI"),
+		dbclient:   DBclient,
+	}
+
 	r := gin.Default()
-	r.POST("/api/createEvent", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
 
-		username, err := usernameFromAuthorization(c)
-		if err != nil {
-			log.Printf("failed to get username in createEvent: %s\n", err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+	r.POST("/api/signup", api.signup)
 
-		log.Println(fmt.Sprintf("recv'd createEvent from %s from %s", username, username))
-		var event Event
+	authenticated := r.Group("/", gin.BasicAuth(accounts(DBclient)))
+	authenticated.POST("/api/interested", api.interested)
+	authenticated.POST("/api/createEvent", api.createEventRoute)
+	authenticated.GET("/api/events", api.events)
+	authenticated.GET("/api/users", api.listUsers)
 
-		// bind form data (WHICH SHOULD BIND) to event and check if error is produced (not nil)
-		// (sorta weird syntax)
-		if err := c.ShouldBind(&event); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		event.Director = username
-		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", GEMINI_APIKEY)
-		jsonData := fmt.Sprintf(`{"contents": [{"parts":[{"text": "generate a simple list of tags for a new event listing. give only the tags separated by commas.\n Title: %s\nBlurb: %s\n, Description: %s\n"}]}]}`, event.Title, event.Blurb, event.Description)
-
-		log.Printf("key: %s\n", string(GEMINI_APIKEY))
-		log.Printf("url: %s\n", string(url))
-		log.Printf("jsondata: %s\n", string(jsonData))
-
-		resp, err := http.Post(url, "application/json", strings.NewReader(jsonData))
-		if err != nil {
-			log.Fatalf("Error making POST request: %v", err)
-		}
-		defer resp.Body.Close()
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatalf("Error reading response body: %v", err)
-		}
-
-		log.Println("Status Code:", resp.StatusCode)
-		log.Println("Response Body:", string(body))
-
-		// good paste
-		var data struct {
-			Candidates []struct {
-				Content struct {
-					Parts []struct {
-						Text string `json:"text"`
-					} `json:"parts"`
-				} `json:"content"`
-			} `json:"candidates"`
-		}
-
-		err = json.Unmarshal([]byte(body), &data)
-        if err != nil {
-                log.Fatalf("Error unmarshalling JSON: %v", err)
-        }
-		tags := data.Candidates[0].Content.Parts[0].Text
-		event.Tags = tags
-
-		log.Println(tags)
-
-		err = createEvent(DBclient, event)
-		if err != nil {
-			log.Printf("failed to create event: %+v, err: %s", event, err)
-			return
-		}
-
-	})
-
-	r.GET("/api/events", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
-		c.JSON(http.StatusOK, getEvents(DBclient))
-	})
-
-	r.GET("/api/users", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
-		// pray no error.
-		users, _ := allUsers(DBclient)
-
-		c.JSON(http.StatusOK, users)
-	})
-
-	// front end routes
-	r.SetFuncMap(template.FuncMap{
-		"dict": func(values ...interface{}) map[string]interface{} {
-			m := make(map[string]interface{})
-			for i := 0; i < len(values); i += 2 {
-				key := values[i].(string)
-				m[key] = values[i+1]
-			}
-			return m
-		},
-	})
-	r.LoadHTMLGlob("src/templates/**/*")
-
-	r.GET("/", hasAuth(), gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	// TODO: think more abt Api struct pattern
+	// for now it feels nice enough
+	// none of the below routes require db/gemini access
+	// unsure what a nice way to handle this is
+	// the api struct feels niceish but maybe it should be Env?
+	// can I justify putting everything under api?
+	// these all happen to also be frontend routes
+	authenticated.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title":      "Main website",
 			"isIndex":    true,
@@ -180,13 +269,13 @@ func main() {
 		})
 	})
 
-	r.GET("/create", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	authenticated.GET("/create", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "create.html", gin.H{
 			"title": "Main website",
 		})
 	})
 
-	r.GET("/profile", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	authenticated.GET("/profile", func(c *gin.Context) {
 		name, err := usernameFromAuthorization(c)
 		if err != nil {
 			log.Printf("failed to get username in profile: %s\n", err)
@@ -197,13 +286,13 @@ func main() {
 		c.Redirect(http.StatusFound, "/profile/"+name)
 	})
 
-  r.GET("/RSVP/:event", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	authenticated.GET("/RSVP/:event", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "rsvp.html", gin.H{
 			"title": "Main website",
 		})
 	})
 
-	r.GET("/profile/:name", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	authenticated.GET("/profile/:name", func(c *gin.Context) {
 		name := c.Param("name")
 		user, err := findUser(DBclient, name)
 		if err != nil {
@@ -218,7 +307,7 @@ func main() {
 		})
 	})
 
-	r.GET("/events", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
+	authenticated.GET("/events", func(c *gin.Context) {
 		username, err := usernameFromAuthorization(c)
 		if err != nil {
 			log.Printf("failed to get username in getEvent: %s\n", err)
@@ -229,6 +318,12 @@ func main() {
 			"title":    "Main website",
 			"isEvents": true,
 			"Events":   getInterestedEvents(DBclient, username),
+		})
+	})
+
+	authenticated.GET("/filter", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "filter.html", gin.H{
+			"title": "Main website",
 		})
 	})
 
@@ -245,86 +340,18 @@ func main() {
 		// })
 	})
 
-	r.GET("/filter", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
-		c.HTML(http.StatusOK, "filter.html", gin.H{
-			"title": "Main website",
-		})
+	// front end routes
+	r.SetFuncMap(template.FuncMap{
+		"dict": func(values ...interface{}) map[string]interface{} {
+			m := make(map[string]interface{})
+			for i := 0; i < len(values); i += 2 {
+				key := values[i].(string)
+				m[key] = values[i+1]
+			}
+			return m
+		},
 	})
-
-	r.POST("/api/interested", gin.BasicAuth(accounts(DBclient)), func(c *gin.Context) {
-		type FormData struct {
-			EventName string `form:"eventName"`
-		}
-		var form FormData
-		username, err := usernameFromAuthorization(c)
-		if err != nil {
-			log.Printf("failed to get username in interested: %s\n", err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		err = c.ShouldBindJSON(&form)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			log.Printf("errored:%s\n", err)
-			return
-		}
-		log.Println("event", form.EventName)
-		addInterest(DBclient, Interest{Username: username, Event: form.EventName})
-	})
-
-	r.POST("/api/signup", func(c *gin.Context) {
-		log.Println("recv'd ")
-
-		var user User
-		if err := c.ShouldBind(&user); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			log.Printf("errored:%s\n", err)
-			return
-		}
-
-		// try inserting into db
-		err := createUser(DBclient, user)
-		if err != nil {
-			log.Printf("failed to create user: %s", err)
-		}
-
-		data := fmt.Sprintf("%s:%s", user.Username, user.Password)
-		encoded := base64.StdEncoding.EncodeToString([]byte(data))
-		header := fmt.Sprintf("Basic %s", encoded)
-
-		log.Printf("data %s, bytes %v\n", data, header)
-		log.Printf("%+v\n", user)
-
-		// If data binding is successful, return the user information
-		// WE DIRELY NEED TO ACCEPT THESE HEADERS IN JAVASCRIPT
-		// THE ENTIRE PROGRAM IS SOFTLOCKED UNTIL THIS IS ACCEPTED.
-		// DO THIS IN SIGNUP ON THE RESPONSE FROM FETCH REQUEST TO THIS API ENDPOINT
-		// FIX
-		// FIX
-		// FIX
-		// FIX
-		// FIX
-		// FIX
-		// FIX
-		// FIX
-		c.Header("WWW-Authenticate", `Basic realm="dear god help"`)
-		// c.Request.SetBasicAuth(user.Username, user.Password)
-		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user, "Authorization": header})
-	})
-
-	r.POST("/api/login", func(c *gin.Context) {
-		log.Println("recv'd ")
-
-		var user User
-		if err := c.ShouldBind(&user); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			log.Printf("errored:%s\n", err)
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "user Created!", "user": user})
-		log.Printf("%+v\n", user)
-	})
+	r.LoadHTMLGlob("src/templates/**/*")
 
 	//front end routes
 	r.Static("/js", "src/static/js")
