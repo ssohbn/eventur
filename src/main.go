@@ -68,6 +68,9 @@ func hasAuth() gin.HandlerFunc {
 
 type Api struct {
 	gemini_key string
+
+	// two db related things does not make sense.
+	// db connections should be rethought
 	mongo_uri  string
 	dbclient   *mongo.Client
 }

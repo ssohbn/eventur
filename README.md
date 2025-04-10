@@ -16,4 +16,3 @@ will read from .env :D
 
 and then like idk i just use ``go run ./src`` works good nuff
 
-
